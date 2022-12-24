@@ -73,7 +73,16 @@ function count() {
 
 function subscribeToEvents(){
 
-    contract.events.NewCounterState( 
+    contract.events.AuctionOpened( 
+		callback = function(error, event){
+			if (!error) {
+                console.log("Event captured.")
+                $("#result").html("Counter = "+event.returnValues["counter"]);
+			}
+		}
+	);
+
+    contract.events.TaxChanged( 
 		callback = function(error, event){
 			if (!error) {
                 console.log("Event captured.")
