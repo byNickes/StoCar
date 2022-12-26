@@ -13,7 +13,7 @@ $(window).on('load', function() {
 });
 
 async function initialise(contractAddress) {
-// Initialisation of Web3
+    // Initialisation of Web3
     if (typeof web3 !== 'undefined') {
         web3 = new Web3(web3.currentProvider);
     } else {
@@ -42,8 +42,7 @@ async function initialise(contractAddress) {
     });
 
     // Subscribe to all events by the contract
-    contract.events.allEvents(
-        callback=function(error, event){
+    contract.events.allEvents( (error, event) => {
         if (error) {
             console.error(error)
         }
@@ -54,23 +53,11 @@ async function initialise(contractAddress) {
     // Create additional event listeners to display the results of a play.
     subscribeToEvents();
 
-    //Connect to the database
-    connect2DB();
     /*
     // Update the information displayed
     updateDisplayedInformation();
     
     */
-}
-
-function connect2DB(){
-    const pool = new Pool({
-        user: 'stocar',
-        database: 'stocar',
-        password: 'stocar',
-        port: 5432,
-        host: 'localhost',
-      })
 }
 
 function count() {
@@ -90,26 +77,34 @@ async function openAuction() {
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
 
+    fetch('http://localhost:5000/auctions/', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            "owner_addr": senderAddress
+        })
+    })
 }
 
 function subscribeToEvents(){
 
-    contract.events.AuctionOpened( 
-		callback = function(error, event){
-			if (!error) {
-                console.log("Event captured.")
-                $("#result").html("Counter = "+event.returnValues["counter"]);
-			}
+    contract.events.AuctionOpened( (error, event) => {
+            if (error) {
+                console.error(error)
+            }
+            console.log(event);
 		}
 	);
 
-    contract.events.TaxChanged( 
-		callback = function(error, event){
-			if (!error) {
-                console.log("Event captured.")
-                $("#result").html("Counter = "+event.returnValues["counter"]);
-			}
-		}
+    contract.events.TaxChanged((error, event) => {
+            if (error) {
+                console.error(error)
+            }
+            console.log(event);
+        }
 	);
 
 }
