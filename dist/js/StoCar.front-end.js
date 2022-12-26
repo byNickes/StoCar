@@ -54,11 +54,23 @@ async function initialise(contractAddress) {
     // Create additional event listeners to display the results of a play.
     subscribeToEvents();
 
+    //Connect to the database
+    connect2DB();
     /*
     // Update the information displayed
     updateDisplayedInformation();
     
     */
+}
+
+function connect2DB(){
+    const pool = new Pool({
+        user: 'stocar',
+        database: 'stocar',
+        password: 'stocar',
+        port: 5432,
+        host: 'localhost',
+      })
 }
 
 function count() {
@@ -69,6 +81,15 @@ function count() {
     contract.methods.count().send({from:senderAddress}).on('receipt', function(receipt) {
         console.log("Receipt received.");
     });
+}
+
+async function openAuction() {
+    var description = $('#description').val();
+    var starting_price = $('#starting_price').val();
+    var maximum_duration = $('#maximum_duration').val();
+
+    var picture_id = 0 //TO DO INSERTION OF PICTURES
+
 }
 
 function subscribeToEvents(){

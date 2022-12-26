@@ -2,12 +2,12 @@
   "devDependencies": {
     "lite-server": "^2.6.1"
   },
-  
   "scripts": {
-		"dev": "lite-server"
-	},
-
+    "dev": "lite-server"
+  },
   "dependencies": {
-		"web3": "^1.8.1"
-	}
+    "pg": "^8.8.0",
+    "web3": "^1.8.1"
+  },
+  "type": "module"
 }

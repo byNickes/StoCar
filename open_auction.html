@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<head>
+		<title>StoCar - Create a new auction</title>
+    </head>
+    
+    <body>
+        <form onsumbit="openAuction(); return false;" id="new_auction">
+            <label for="description">Car description:</label><br>
+            <input type="text" id="description" name="description"><br>
+            <label for="starting_price">Auction starting price:</label><br>
+            <input type="number" id="starting_price" name="starting_price"><br>
+            <label for="maximum_duration">Auction maximum duration (hours):</label><br>
+            <input type="number" id="maximum_duration" name="maximum_duration"><br>
+            <label for="chassis_id">Chassis identification number of the car:</label><br>
+            <input type="text" id="chassis_id" name="chassis_id">
+            <input type="submit" value="Submit">
+          </form>
+    </body>
+
+    <script src="/dist/js-lib/jquery.min.js"></script>
+	<script src="/dist/js-lib/web3.min.js"></script>
+    <!-- To make our code tidier, we separate the JS script from the HTML file -->
+	<script type="module" src="/dist/js/StoCar.front-end.js"></script>
+</html>
