@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x0b284De5DF970eb547f32Be57d643A52cA5CdD9D";
+var contractAddress = "0xb1Dde836A6fA4B435E131f7CCeb6a1cbD57a0350";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -72,11 +72,20 @@ function count() {
 
 async function openAuction() {
     var description = $('#description').val();
-    var starting_price = $('#starting_price').val();
-    var maximum_duration = $('#maximum_duration').val();
+    var starting_price = parseInt($('#starting_price').val());
+    var maximum_duration = parseInt($('#maximum_duration').val());
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
 
+    contract.methods.openAuction(starting_price, maximum_duration).call({from:senderAddress}).then(function(result) {
+        console.log("Counter request sent.");
+    });
+    
+    contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).on('receipt', function(receipt) {
+        console.log("Receipt received.");
+    });
+
+    
     fetch('http://localhost:5000/auctions/', {
         method: 'POST',
         headers: {
@@ -84,9 +93,30 @@ async function openAuction() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-            "owner_addr": senderAddress
+            "owner_addr": senderAddress,
+            "starting_price": starting_price,
+            "maximum_duration": maximum_duration,
+            "picture_id": picture_id,
+            "description": description
         })
-    })
+    });
+}
+
+function getAuctions(){
+    fetch('http://localhost:5000/auctions/', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        return response.json()
+        //$("#list_auctions").html(response);
+    }).then((data) => {
+        $("#list_auctions").html(data);
+    });
+
+
 }
 
 function subscribeToEvents(){

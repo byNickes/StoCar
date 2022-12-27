@@ -24,6 +24,10 @@ contract StoCar{
         tax = starting_tax;
     }
 
+    function nothing() public{
+        
+    }
+
     function openAuction(uint256 starting_price, uint16 max_duration) public{
         require(auctions[msg.sender].owner == address(0), "Only one open auction per user.");
 

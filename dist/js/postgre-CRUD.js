@@ -33,8 +33,8 @@ app.get("/auctions", async(req,res) => {
 //CREATE AN AUCTION
 app.post("/auctions", async(req,res) => {
     try{
-        const {owner_addr} = req.body;
-        const newAuction = await pool.query("INSERT INTO auctions (owner_addr) VALUES ($1)", [owner_addr]);
+        const {owner_addr, starting_price, maximum_duration, picture_id, description} = req.body;
+        await pool.query("INSERT INTO auctions (owner_addr, starting_price, maximum_duration, picture_id, description) VALUES ($1, $2, $3, $4, $5)", [owner_addr, starting_price, maximum_duration, picture_id, description]);
     }
     catch (err){
         console.error(err.message);
