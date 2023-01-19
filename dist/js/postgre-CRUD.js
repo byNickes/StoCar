@@ -44,6 +44,6 @@ app.post("/auctions", async(req,res) => {
 //DELETE AN AUCTION
 
 app.listen(5000, () => {
-    console.log("Server is listeng on on port 5000")
+    console.log("Server is listening on on port 5000")
 })
 
