@@ -52,22 +52,6 @@ async function initialise(contractAddress) {
     
     // Create additional event listeners to display the results of a play.
     subscribeToEvents();
-
-    /*
-    // Update the information displayed
-    updateDisplayedInformation();
-    
-    */
-}
-
-function count() {
-    contract.methods.count().call({from:senderAddress}).then(function(result) {
-        console.log("Counter request sent.");
-    });
-
-    contract.methods.count().send({from:senderAddress}).on('receipt', function(receipt) {
-        console.log("Receipt received.");
-    });
 }
 
 async function openAuction() {
@@ -102,7 +86,7 @@ async function openAuction() {
     });
 }
 
-function getAuctions(){
+async function getAuctions(){
     fetch('http://localhost:5000/auctions/', {
         method: 'GET',
         headers: {

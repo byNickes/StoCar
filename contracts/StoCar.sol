@@ -11,8 +11,14 @@ contract StoCar{
         uint256 offer; //either starting price or highest offer
         uint16 duration; //maximum duration of the auction in hours
     }
-    mapping(address=>Auction) auctions; //list of open auctions where the keys
-                                        //is owner's address
+
+    struct CarNFT{
+        bytes32 id; //hash of the chassis number computed with keccak256
+    }
+
+    mapping(address=>Auction) open_auctions; //list of all the auctions where the keys
+                                             //is owner's address
+    mapping(address=>Auction) closed_auctions; //list of all the closed auctions
 
     //Events declaration
     event TaxChanged(uint64 new_tax);
@@ -24,14 +30,10 @@ contract StoCar{
         tax = starting_tax;
     }
 
-    function nothing() public{
-        
-    }
-
     function openAuction(uint256 starting_price, uint16 max_duration) public{
-        require(auctions[msg.sender].owner == address(0), "Only one open auction per user.");
+        require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
 
-        auctions[msg.sender] = Auction({
+        open_auctions[msg.sender] = Auction({
             owner: msg.sender,
             current_winner: address(0),
             offer: starting_price,
@@ -42,7 +44,7 @@ contract StoCar{
     }
 
     function changeFixedTax(uint64 new_tax) public{
-        require(msg.sender == creator, "You are not the creator of the contract.");
+        require(msg.sender == creator, "You are not the creator of the contract."); //maybe cast to payable needed
         
         tax = new_tax;
 

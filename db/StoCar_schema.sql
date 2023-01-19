@@ -1,3 +1,11 @@
+DROP TABLE "auctions";
+DROP TABLE "cars";
+
+CREATE TABLE "cars" (
+  "chassis_id" varchar,
+  PRIMARY KEY ("chassis_id")
+);
+
 CREATE TABLE "auctions" (
   "owner_addr" varchar,
   "starting_price" int,
@@ -5,7 +13,6 @@ CREATE TABLE "auctions" (
   "picture_id" int,
   "description" varchar,
   "chassis_id" varchar,
+  FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
   PRIMARY KEY ("owner_addr")
 );
-
-COMMENT ON COLUMN "auction"."owner_addr" IS '(1,1)';
