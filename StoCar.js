@@ -89,6 +89,7 @@ async function openAuction() {
     });
 }
 
+//Plots all the auctions in a table
 async function getAuctions(){
     fetch('http://localhost:5000/auctions/', {
         method: 'GET',
@@ -98,9 +99,23 @@ async function getAuctions(){
         }
     }).then((response) => {
         return response.json()
-        //$("#list_auctions").html(response);
-    }).then((data) => {
-        $("#list_auctions").html(data);
+    }).then((auctions) => {
+        console.log(auctions)
+
+        for(let i = 0; i<auctions.length; i++){
+            console.log(auctions[i])
+            auction = auctions[i];
+            var tr = "<tr>";
+            tr += "<td>"+auction.owner_addr+"</td>";
+            tr += "<td>"+auction.chassis_id+"</td>";
+            tr += "<td>"+auction.description+"</td>";
+            tr += "<td>"+auction.maximum_duration+"</td>";
+            tr += "<td>"+auction.picture_id+"</td>";
+            tr += "<td>"+auction.starting_price+"</td>";
+            tr += "</tr>";
+            
+            document.getElementById('list_auctions').innerHTML += tr;
+        }
     });
 
 

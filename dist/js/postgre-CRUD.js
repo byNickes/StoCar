@@ -34,7 +34,7 @@ app.get("/auctions", async(req,res) => {
 app.post("/auctions", async(req,res) => {
     try{
         const {owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id} = req.body;
-        car = await pool.query("SELECT chassis_id FROM cars WHERE chassis_id = $1", [chassis_id]);
+        var car = await pool.query("SELECT chassis_id FROM cars WHERE chassis_id = $1", [chassis_id]);
         if(car.rowCount == 0){
             await pool.query("INSERT INTO cars (chassis_id) VALUES ($1)", [chassis_id]);
         }
