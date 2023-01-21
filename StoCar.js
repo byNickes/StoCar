@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xb1Dde836A6fA4B435E131f7CCeb6a1cbD57a0350";
+var contractAddress = "0xc565be0811Ad900cc6655A65d8ee93D6e8EA8e9c";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -58,9 +58,11 @@ async function openAuction() {
     var description = $('#description').val();
     var starting_price = parseInt($('#starting_price').val());
     var maximum_duration = parseInt($('#maximum_duration').val());
+    var chassis_id = $('#chassis_id').val();
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
 
+    /*
     contract.methods.openAuction(starting_price, maximum_duration).call({from:senderAddress}).then(function(result) {
         console.log("Counter request sent.");
     });
@@ -68,7 +70,7 @@ async function openAuction() {
     contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).on('receipt', function(receipt) {
         console.log("Receipt received.");
     });
-
+    */
     
     fetch('http://localhost:5000/auctions/', {
         method: 'POST',
@@ -81,7 +83,8 @@ async function openAuction() {
             "starting_price": starting_price,
             "maximum_duration": maximum_duration,
             "picture_id": picture_id,
-            "description": description
+            "description": description,
+            "chassis_id": chassis_id
         })
     });
 }
