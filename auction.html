@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<head>
+		<title>StoCar - View auction</title>
+    </head>
+
+    <body onload="getAuction(); return false;">
+        <table id="auction">
+            <th>owner address</th><br>
+            <th>chassis_id</th><br>
+            <th>description</th><br>
+            <th>maximum duration</th><br>
+            <th>picture</th><br>
+            <th>starting price</th><br>
+        </table>
+    </body>
+
+    <script src="dist/js-lib/jquery.min.js"></script>
+	<script src="dist/js-lib/web3.min.js"></script>
+    <!-- To make our code tidier, we separate the JS script from the HTML file -->
+	<script src="StoCar.js"></script>
+</html>

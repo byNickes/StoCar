@@ -105,6 +105,14 @@ async function getAuctions(){
         for(let i = 0; i<auctions.length; i++){
             console.log(auctions[i])
             auction = auctions[i];
+
+            button = '<form action="/auction.html" method="get"> \
+                        <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
+                        <input type="submit" value="View auction"/> \
+                      </form>'
+
+            console.log(button)
+
             var tr = "<tr>";
             tr += "<td>"+auction.owner_addr+"</td>";
             tr += "<td>"+auction.chassis_id+"</td>";
@@ -112,13 +120,20 @@ async function getAuctions(){
             tr += "<td>"+auction.maximum_duration+"</td>";
             tr += "<td>"+auction.picture_id+"</td>";
             tr += "<td>"+auction.starting_price+"</td>";
+            tr += "<td>"+button+"</td>";
             tr += "</tr>";
             
             document.getElementById('list_auctions').innerHTML += tr;
         }
     });
+}
 
+//Plot a single auction
+async function getAuction(){
+    var url = new URLSearchParams(window.location.search);
+    owner_addr = url.get("owner_addr");
 
+    console.log("OWNER_ADDR: "+owner_addr);
 }
 
 function subscribeToEvents(){
