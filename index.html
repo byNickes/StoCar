@@ -17,7 +17,7 @@
         <script src="dist/js-lib/jquery.min.js"></script>
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    <body onload="assegnaEventHandler();">
+    <body onload="assegnaEventHandler(); getAuctions(); return false;">
         <div class="header2">
             <div class="logo">
                 <a href="index.html">
@@ -107,9 +107,15 @@
                 </div>
             </div>
         </div>
-
-        
-        
+        <h>Available Auctions</h><br>
+        <table id="list_auctions">
+            <th>owner address</th>
+            <th>chassis_id</th>
+            <th>description</th>
+            <th>maximum duration</th>
+            <th>picture</th>
+            <th>starting price</th>
+        </table>
     </body>
     
     <footer class="footer">

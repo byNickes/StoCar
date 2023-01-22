@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xb1Dde836A6fA4B435E131f7CCeb6a1cbD57a0350";
+var contractAddress = "0xc565be0811Ad900cc6655A65d8ee93D6e8EA8e9c";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -58,9 +58,11 @@ async function openAuction() {
     var description = $('#description').val();
     var starting_price = parseInt($('#starting_price').val());
     var maximum_duration = parseInt($('#maximum_duration').val());
+    var chassis_id = $('#chassis_id').val();
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
 
+    /*
     contract.methods.openAuction(starting_price, maximum_duration).call({from:senderAddress}).then(function(result) {
         console.log("Counter request sent.");
     });
@@ -68,7 +70,7 @@ async function openAuction() {
     contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).on('receipt', function(receipt) {
         console.log("Receipt received.");
     });
-
+    */
     
     fetch('http://localhost:5000/auctions/', {
         method: 'POST',
@@ -81,11 +83,13 @@ async function openAuction() {
             "starting_price": starting_price,
             "maximum_duration": maximum_duration,
             "picture_id": picture_id,
-            "description": description
+            "description": description,
+            "chassis_id": chassis_id
         })
     });
 }
 
+//Plots all the auctions in a table
 async function getAuctions(){
     fetch('http://localhost:5000/auctions/', {
         method: 'GET',
@@ -95,9 +99,23 @@ async function getAuctions(){
         }
     }).then((response) => {
         return response.json()
-        //$("#list_auctions").html(response);
-    }).then((data) => {
-        $("#list_auctions").html(data);
+    }).then((auctions) => {
+        console.log(auctions)
+
+        for(let i = 0; i<auctions.length; i++){
+            console.log(auctions[i])
+            auction = auctions[i];
+            var tr = "<tr>";
+            tr += "<td>"+auction.owner_addr+"</td>";
+            tr += "<td>"+auction.chassis_id+"</td>";
+            tr += "<td>"+auction.description+"</td>";
+            tr += "<td>"+auction.maximum_duration+"</td>";
+            tr += "<td>"+auction.picture_id+"</td>";
+            tr += "<td>"+auction.starting_price+"</td>";
+            tr += "</tr>";
+            
+            document.getElementById('list_auctions').innerHTML += tr;
+        }
     });
 
 
