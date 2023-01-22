@@ -87,6 +87,9 @@ async function openAuction() {
             "chassis_id": chassis_id
         })
     });
+
+    document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
+    document.getElementById('new_auction').reset();
 }
 
 //Plots all the auctions in a table
