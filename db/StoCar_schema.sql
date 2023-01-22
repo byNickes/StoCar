@@ -16,3 +16,6 @@ CREATE TABLE "auctions" (
   FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
   PRIMARY KEY ("owner_addr")
 );
+
+INSERT INTO "auctions" ("owner_addr","starting_price","maximum_duration","picture_id","description","chassis_id")
+VALUES ("0",0,0,0,"description1","chassis_id1");

@@ -3,15 +3,121 @@
 	<meta charset="utf-8">
 	<head>
 		<title>StoCar</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/bootstrap.min.css" rel="stylesheet"> 
+        <script type="text/javascript" src="js/bootstrap.min.js" language="javascript"></script>
+        <link href="css/carousel.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;800&display=swap" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/script.js" language="javascript"></script>
+        <script type="text/javascript" src="StoCar.js" language="javascript"></script>
+        <script src="dist/js-lib/jquery.min.js"></script>
+        <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    
-    <body onload="getAuctions(); return false;">
-        <h>Available Auctions</h>
-        <h id="list_auctions"></h>
-    </body>
+    <body onload="assegnaEventHandler();">
+        <div class="header2">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="img/logo.png">
+                </a>
+            </div>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                    <li><a href="open_auction.html">Sell</a></li>
+                    <li><a href="partecipate_auction.html">Buy</a></li>
+                    <li><a href="">Available Auctions</a></li><!--TODO-->
+                </ul>
+            <ul class="ai" style="padding-top:20px ; padding-left: 240px ;">
+                <a href="login.html" class="button">Login</a>
+                <a href="signup.html" class="button">Sign Up</a>
+            </ul>
+            <!--<div class="dropdown">
+                <a id="button" class="button_crea">Menu</a>
+                <ul id="list" class="d" >
+                <br>
+                    <label>NOME UTENTE</label>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="">Profile</a></li>
+                    <li>  <a href="">Logout</a></li>
+                </ul> 
+            </div>-->
+        </div>
+        <div class="sfondo">
+            <div id="my-carousel" class="carousel slide " data-wrap="false" data-bs-ride="carousel" >
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#my-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#my-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#my-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#my-carousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+              </div>
+              <div class="carousel-inner">
+              <div class="carousel-item active" >
+                  <div class="carousel-caption d-none d-md-block">
+                  <h3 style='font-weight: bold;color:rgb(255, 255, 255); font-style: oblique;'>Crea il tuo sondaggio o questionario online con Doxam</h3>
+                    <p>Progetta sondaggi,questionari e quiz con varie modalità di risposta</p>
+                   </div>
+                </div>
+                <div class="carousel-item"  >
+                  <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
+                  <img src='freccia.gif' style="width:5%;" alt=".." ></img>
+                  <br><br>
+                  <h1>Prima di iniziare registrati al nostro sito!</h1>
+                    <h2>Una volta esserti registrato potrei navigare liberamente nel nostro sito.</h2>
+                    <a class="button" href="registrazione.php">Registrati qui</a>
+                   </div>
+                </div>
+                <div class="carousel-item" >
+                  <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
+                  <h1>Scegli se creare o partecipare ad un sondaggio</h1>
+                  <h2>Avrai la possibiltà di scegliere se partecipare ad uno dei tanti sondaggi presenti sul sito o essere direttamente tu il creatore di uno di questi.</h2>
+                  </div>
+                </div>
+                <div class="carousel-item" >
+                  <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
+                  <h1>Potrai scegliere tra 3 tipologie.</h1>
+                  <h2 style='color:rgba(190, 82, 74, 0.795); font-style: oblique;'>Quale sondaggio fa al caso tuo? </h2>
+                  <h3>Decidi tra le domande a riposta multipla, la risposta aperta o il test di gradimento.</h3>
+                  </div>
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#my-carousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#my-carousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+        </div>
+        <div class="sfondo2">
+            <div class="hero">
+                <div class="hero__content1">
+                    <a id="crea" href="open_auction.html" class="button_form">Buy</a>
+                    <div id="s1" class="speech-bubble speech-bubble-top"><i>Here you can open an Auction</i></div>
+                </div>  
+                <script>
+                </script>
+                <div class="hero__content1">
+                    <a id="partecipa" href="partecipate_auction.html" class="button_form">Sell</a>
+                    <div id="s2" class="speech-bubble speech-bubble-top"><i>Here you can partecipate to an Auction</i></div>
+                </div>
+            </div>
+        </div>
 
-    <script src="dist/js-lib/jquery.min.js"></script>
-	<script src="dist/js-lib/web3.min.js"></script>
-    <!-- To make our code tidier, we separate the JS script from the HTML file -->
-	<script src="StoCar.js"></script>
+        
+        
+    </body>
+    
+    <footer class="footer">
+        <p>  &copy; Copyright 2023 StoCar </p>
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/logo.png">
+            </a>
+        </div>
+    </footer>
 </html>
