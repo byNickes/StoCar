@@ -19,7 +19,7 @@
     </head>
     
     <body onload="assegnaEventHandler(); getAuctions();">
-        <div class="header2">
+        <div class="header">
             <div class="logo">
                 <a href="index.html">
                     <img src="img/logo.png">
@@ -31,7 +31,7 @@
                 <li><a href="partecipate_auction.html">Buy</a></li>
                 <li><a href="">Available Auctions</a></li><!--TODO-->
             </ul>
-            <ul class="ai" style="padding-top:20px ; padding-left: 240px ;">
+            <ul class="ai2">
                 <a href="login.html" class="button">Login</a>
                 <a href="signup.html" class="button">Sign Up</a>
             </ul>
@@ -46,8 +46,9 @@
                 </ul> 
             </div>-->
         </div>
-        <h>Available Auctions</h><br>
-        <table id="list_auctions">
+        <div class="sfondo">
+            <h4>Available Auctions</h4><br>
+            <table id="list_auctions">
             <th>owner address</th>
             <th>chassis_id</th>
             <th>description</th>
@@ -55,6 +56,7 @@
             <th>picture</th>
             <th>starting price</th>
         </table>
+        </div>
     </body>
     <footer class="footer">
         <p>  &copy; Copyright 2023 StoCar </p>

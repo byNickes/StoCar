@@ -17,8 +17,8 @@
         <script src="dist/js-lib/jquery.min.js"></script>
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    <body onload="assegnaEventHandler(); getAuctions(); return false;">
-        <div class="header2">
+    <body onload="assegnaEventHandler(); getAuctions();">
+        <div class="header">
             <div class="logo">
                 <a href="index.html">
                     <img src="img/logo.png">
@@ -26,10 +26,10 @@
             </div>
             <ul class="menu">
                 <li><a href="index.html">Home</a></li>
-                    <li><a href="open_auction.html">Sell</a></li>
-                    <li><a href="partecipate_auction.html">Buy</a></li>
-                    <li><a href="">Available Auctions</a></li><!--TODO-->
-                </ul>
+                <li><a href="open_auction.html">Sell</a></li>
+                <li><a href="partecipate_auction.html">Buy</a></li>
+                <li><a href="">Available Auctions</a></li><!--TODO-->
+            </ul>
             <ul class="ai">
                 <a href="login.html" class="button">Login</a>
                 <a href="signup.html" class="button">Sign Up</a>
@@ -45,7 +45,7 @@
                 </ul> 
             </div>-->
         </div>
-        <div class="sfondo">
+        <div class="sfondo_carousel">
             <div id="my-carousel" class="carousel slide " data-wrap="false" data-bs-ride="carousel" >
               <div class="carousel-indicators">
                 <button type="button" data-bs-target="#my-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -56,30 +56,41 @@
               <div class="carousel-inner">
               <div class="carousel-item active" >
                   <div class="carousel-caption d-none d-md-block">
-                  <h3 style='font-weight: bold;color:rgb(255, 255, 255); font-style: oblique;'>Crea il tuo sondaggio o questionario online con Doxam</h3>
-                    <p>Progetta sondaggi,questionari e quiz con varie modalità di risposta</p>
+                    <img src='img/freccia.gif' style="width:5%;" alt=".." ></img>
+                  <br><br> 
+                    <h1>SLIDE 1</h1>
+                    <!--TODO: slide 1 che raccoglie info sul sito-->
+                  <!--<h3 style='font-weight: bold;color:rgb(255, 255, 255); font-style: oblique;'>Crea il tuo sondaggio o questionario online con Doxam</h3>
+                    <p>Progetta sondaggi,questionari e quiz con varie modalità di risposta</p>-->
                    </div>
                 </div>
-                <div class="carousel-item"  >
+                <div class="carousel-item">
                   <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
-                  <img src='freccia.gif' style="width:5%;" alt=".." ></img>
-                  <br><br>
-                  <h1>Prima di iniziare registrati al nostro sito!</h1>
+                  <h1>SLIDE 2</h1>
+                  <!--TODO: CAR AUCTION 1
+                    <h1>Prima di iniziare registrati al nostro sito!</h1>
                     <h2>Una volta esserti registrato potrei navigare liberamente nel nostro sito.</h2>
                     <a class="button" href="registrazione.php">Registrati qui</a>
+                  -->   
                    </div>
                 </div>
                 <div class="carousel-item" >
                   <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
-                  <h1>Scegli se creare o partecipare ad un sondaggio</h1>
+                    <h1>SLIDE 3</h1>
+                    <!--TODO: CAR AUCTION 2
+                    <h1>Scegli se creare o partecipare ad un sondaggio</h1>
                   <h2>Avrai la possibiltà di scegliere se partecipare ad uno dei tanti sondaggi presenti sul sito o essere direttamente tu il creatore di uno di questi.</h2>
+                  -->
                   </div>
                 </div>
                 <div class="carousel-item" >
                   <div class="carousel-caption d-none d-md-block" style='position: absolute;right: 15%;bottom: 30%;left: 15%;'>
-                  <h1>Potrai scegliere tra 3 tipologie.</h1>
+                    <h1>SLIDE 4</h1>
+                    <!--TODO: CAR AUCTION 3
+                    <h1>Potrai scegliere tra 3 tipologie.</h1>
                   <h2 style='color:rgba(190, 82, 74, 0.795); font-style: oblique;'>Quale sondaggio fa al caso tuo? </h2>
                   <h3>Decidi tra le domande a riposta multipla, la risposta aperta o il test di gradimento.</h3>
+                  -->
                   </div>
                 </div>
               </div>
@@ -107,8 +118,9 @@
                 </div>
             </div>
         </div>
-        <h>Available Auctions</h><br>
-        <table id="list_auctions">
+        <div class="sfondo3">
+            <h4>Available Auctions</h4><br>
+            <table id="list_auctions">
             <th>owner address</th>
             <th>chassis_id</th>
             <th>description</th>
@@ -116,9 +128,15 @@
             <th>picture</th>
             <th>starting price</th>
         </table>
-        <form action="/open_auction.html">
-            <input type="submit" value="Open a new auction" />
-        </form>
+        <br><br>
+        <a href="open_auction.html" class="button" >Open a new auction</a>
+        </div>
+        
+        
+        <!--<form action="/open_auction.html">
+            style="display: table; text-align: center; padding: 10px 12px;"
+            <input type="submit" value="Open a new auction" class="button"/>
+        </form>-->
     </body>
     
     <footer class="footer">

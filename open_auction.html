@@ -19,7 +19,7 @@
     </head>
     
     <body onload="assegnaEventHandler();">
-        <div class="header2">
+        <div class="header">
             <div class="logo">
                 <a href="index.html">
                     <img src="img/logo.png">
@@ -31,7 +31,7 @@
                 <li><a href="partecipate_auction.html">Buy</a></li>
                 <li><a href="">Available Auctions</a></li><!--TODO-->
             </ul>
-            <ul class="ai" style="padding-top:20px ; padding-left: 240px ;">
+            <ul class="ai2">
                 <a href="login.html" class="button">Login</a>
                 <a href="signup.html" class="button">Sign Up</a>
             </ul>
@@ -46,17 +46,20 @@
                 </ul> 
             </div>-->
         </div>
-        <form onsubmit="openAuction(); return false;" id="new_auction">
-            <label for="description">Car description:</label><br>
-            <input type="text" id="description" name="description"><br>
-            <label for="starting_price">Auction starting price:</label><br>
-            <input type="number" id="starting_price" name="starting_price"><br>
-            <label for="maximum_duration">Auction maximum duration (hours):</label><br>
-            <input type="number" id="maximum_duration" name="maximum_duration"><br>
-            <label for="chassis_id">Chassis identification number of the car:</label><br>
-            <input type="text" id="chassis_id" name="chassis_id">
-            <input type="submit" value="Submit">
-          </form>
+        <div class="sfondo">
+            <form onsubmit="openAuction(); return false;" id="new_auction">
+                <label for="description">Car description:</label><br>
+                <input type="text" id="description" name="description"><br>
+                <label for="starting_price">Auction starting price:</label><br>
+                <input type="number" id="starting_price" name="starting_price"><br>
+                <label for="maximum_duration">Auction maximum duration (hours):</label><br>
+                <input type="number" id="maximum_duration" name="maximum_duration"><br>
+                <label for="chassis_id">Chassis identification number of the car:</label><br>
+                <input type="text" id="chassis_id" name="chassis_id">
+                <input type="submit" value="Submit">
+              </form>
+        </div>
+        
     </body>
     <footer class="footer">
         <p>  &copy; Copyright 2023 StoCar </p>
