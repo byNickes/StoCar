@@ -36,7 +36,9 @@
     position:relative;
     top:35px;
 }
-
+.ai{
+    margin-top:30px ;
+}
 .ai li{display: inline-block;
     }
 .ai li a { 
@@ -58,7 +60,7 @@
 
 }
 .button{
-    padding: 12px 14px; 
+    padding: 10px 12px; 
     background-color: rgba(190, 82, 74, 0.795); 
     color: white; 
     display: inline-block; 
@@ -300,9 +302,7 @@ h2{font-size: 60px; font-style: oblique; text-align: center; }
 
 .header2{
     padding-left:8px; 
-    padding-right:8px;
-    width: 99.95%;
-    top:0;
+    padding-right:4px;
     padding:4px;
     display: flex;
     background-color: white;  
