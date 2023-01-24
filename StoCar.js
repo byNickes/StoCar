@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x7d68C5feb77ebc5E799ec9E166e3b5ae5f163277";
+var contractAddress = "0x5b27956d2A7C0CcB1b3a41EF0607e023a0db21B4";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -41,14 +41,15 @@ async function initialise(contractAddress) {
         console.log("Sender address set: " + senderAddress);
     });
 
-    // Subscribe to all events by the contract
+    // Subscribe to all events exposed by the contract
+    /*
     contract.events.allEvents( (error, event) => {
         if (error) {
             console.error(error)
         }
         console.log(event);
     });
-    
+    */
     
     // Create additional event listeners to display the results of a play.
     subscribeToEvents();
@@ -61,29 +62,27 @@ async function openAuction() {
     var chassis_id = $('#chassis_id').val();
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
+    
+    contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).then(function(receipt) {
+        console.log(receipt);
 
-    contract.methods.openAuction(starting_price, maximum_duration).call({from:senderAddress}).then(function(result) {
-        console.log("Auction opening works.");
-    });
-    
-    contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).on('receipt', function(receipt) {
-        console.log("Auction opened on the smart contract.");
-    });
-    
-    fetch('http://localhost:5000/auctions/', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-            "owner_addr": senderAddress,
-            "starting_price": starting_price,
-            "maximum_duration": maximum_duration,
-            "picture_id": picture_id,
-            "description": description,
-            "chassis_id": chassis_id
-        })
+        fetch('http://localhost:5000/auctions/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                "owner_addr": senderAddress,
+                "starting_price": starting_price,
+                "maximum_duration": maximum_duration,
+                "picture_id": picture_id,
+                "description": description,
+                "chassis_id": chassis_id
+            })
+        });
+    }).catch((err)=>{
+        
     });
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
@@ -168,31 +167,31 @@ async function getAuction(){
     console.log("OWNER_ADDR: "+owner_addr);
 }
 
+
 async function participateAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
 
     var offer = $('#offer').val();
-
-    contract.methods.participateAuction(owner_addr, offer).call({from:senderAddress}).then(function(result) {
-        console.log("The new offer works.");
-    });
     
-    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress}).on('receipt', function(receipt) {
-        console.log("The new offer has been sent.");
+    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress}).then(function(receipt) {
+        console.log(receipt);
+
+        fetch('http://localhost:5000/send_offer', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                "owner_addr": owner_addr,
+                "offer": offer
+            })
+        });
+    }).catch((err)=>{
+
     });
 
-    fetch('http://localhost:5000/send_offer', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-            "owner_addr": owner_addr,
-            "offer": offer
-        })
-    });
 }
 
 function subscribeToEvents(){
@@ -201,7 +200,7 @@ function subscribeToEvents(){
             if (error) {
                 console.error(error)
             }
-            console.log(event);
+            //console.log(event);
 		}
 	);
 
@@ -209,7 +208,7 @@ function subscribeToEvents(){
             if (error) {
                 console.error(error)
             }
-            console.log(event);
+            //console.log(event);
         }
 	);
 
@@ -217,7 +216,7 @@ function subscribeToEvents(){
             if (error) {
                 console.error(error)
             }
-            console.log(event);
+            //console.log(event);
         }
     );
 
