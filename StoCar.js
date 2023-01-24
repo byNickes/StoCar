@@ -1,5 +1,6 @@
 // Set the contract address
-var contractAddress = "0x5b27956d2A7C0CcB1b3a41EF0607e023a0db21B4";
+var contractAddress = "0x5b27956d2A7C0CcB1b3a41EF0607e023a0db21B4"; //NICK
+var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588"; //ANNA
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address

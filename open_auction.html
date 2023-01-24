@@ -27,11 +27,10 @@
             </div>
             <ul class="menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="open_auction.html">Sell</a></li>
-                <li><a href="partecipate_auction.html">Buy</a></li>
-                <li><a href="">Available Auctions</a></li><!--TODO-->
+                <li><a href="available_auctions.html">Buy</a></li>
+                <li><a href="open_auction.html">Sell</a>
             </ul>
-            <ul class="ai2">
+            <ul class="ai">
                 <a href="login.html" class="button">Login</a>
                 <a href="signup.html" class="button">Sign Up</a>
             </ul>
@@ -47,7 +46,7 @@
             </div>-->
         </div>
         <div class="sfondo">
-            <form onsubmit="openAuction(); return false;" id="new_auction">
+            <form onsubmit="openAuction();" id="new_auction">
                 <label for="description">Car description:</label><br>
                 <input type="text" id="description" name="description"><br>
                 <label for="starting_price">Auction starting price:</label><br>
