@@ -23,9 +23,9 @@ contract StoCar{
     //Events declaration
     event TaxChanged(uint64 new_tax);
     event AuctionOpened(address owner);
+    event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
 
     constructor(uint64 starting_tax) {
-        //require(seed > 0, "Please provide a seed that is greater than 0!");
         creator = payable(msg.sender);
         tax = starting_tax;
     }
@@ -41,6 +41,19 @@ contract StoCar{
         });
 
         emit AuctionOpened(msg.sender);
+    }
+
+    function participateAuction(address owner_addr, uint256 new_offer) public{
+        require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists
+        Auction memory auction = open_auctions[owner_addr];
+
+        require(new_offer>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
+
+        uint256 past_offer = auction.offer;
+
+        auction.current_winner = msg.sender;
+        auction.offer = new_offer;
+        emit OfferAccepted(owner_addr, msg.sender, past_offer, new_offer);
     }
 
     function changeFixedTax(uint64 new_tax) public{

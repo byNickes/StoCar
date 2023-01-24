@@ -29,6 +29,18 @@ app.get("/auctions", async(req,res) => {
     }
 });
 //GET AN AUCTION
+app.get("/auction", async(req,res)=>{
+    try{
+        const owner_addr = req.query.owner_addr;
+        
+        const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1", [owner_addr]);
+        res.json(getAuction.rows);
+    }
+    catch(err){
+        console.error(err.message);
+    }
+});
+
 
 //CREATE AN AUCTION
 app.post("/auctions", async(req,res) => {
@@ -42,6 +54,18 @@ app.post("/auctions", async(req,res) => {
         await pool.query("INSERT INTO auctions (owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id) VALUES ($1, $2, $3, $4, $5, $6)", [owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id]);
     }
     catch (err){
+        console.error(err.message);
+    }
+});
+
+//UPDATE STARTING_PRICE OF AN AUCTION
+app.post("/send_offer", async(req,res)=>{
+    try{
+        const{owner_addr, offer} = req.body;
+        
+        await pool.query("UPDATE auctions SET starting_price = $1 WHERE owner_addr = $2", [offer, owner_addr]);
+    }
+    catch(err){
         console.error(err.message);
     }
 });
