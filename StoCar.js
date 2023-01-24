@@ -136,6 +136,37 @@ async function getAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
 
+    fetch('http://localhost:5000/auction?owner_addr='+owner_addr, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        return response.json()
+    }).then((auctions) => {
+        auction = auctions[0];
+        console.log(auction);
+
+        
+        button = '<form action="/participate_auction.html" method="get"> \
+                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
+                    <input type="submit" value="Participate auction"/> \
+                  </form>'
+
+        var tr = "<tr>";
+        tr += "<td>"+auction.owner_addr+"</td>";
+        tr += "<td>"+auction.chassis_id+"</td>";
+        tr += "<td>"+auction.description+"</td>";
+        tr += "<td>"+auction.maximum_duration+"</td>";
+        tr += "<td>"+auction.picture_id+"</td>";
+        tr += "<td>"+auction.starting_price+"</td>";
+        tr += "<td>"+button+"</td>";
+        tr += "</tr>";
+
+        document.getElementById('auction').innerHTML += tr;
+    });
+
     console.log("OWNER_ADDR: "+owner_addr);
 }
 

@@ -29,6 +29,18 @@ app.get("/auctions", async(req,res) => {
     }
 });
 //GET AN AUCTION
+app.get("/auction", async(req,res)=>{
+    try{
+        const owner_addr = req.query.owner_addr;
+        
+        const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1", [owner_addr]);
+        res.json(getAuction.rows);
+    }
+    catch(err){
+        console.error(err.message);
+    }
+});
+
 
 //CREATE AN AUCTION
 app.post("/auctions", async(req,res) => {
