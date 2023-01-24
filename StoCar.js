@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xc565be0811Ad900cc6655A65d8ee93D6e8EA8e9c";
+var contractAddress = "0x7d68C5feb77ebc5E799ec9E166e3b5ae5f163277";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -62,15 +62,13 @@ async function openAuction() {
 
     var picture_id = 0 //TO DO INSERTION OF PICTURES
 
-    /*
     contract.methods.openAuction(starting_price, maximum_duration).call({from:senderAddress}).then(function(result) {
-        console.log("Counter request sent.");
+        console.log("Auction opening works.");
     });
     
     contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).on('receipt', function(receipt) {
-        console.log("Receipt received.");
+        console.log("Auction opened on the smart contract.");
     });
-    */
     
     fetch('http://localhost:5000/auctions/', {
         method: 'POST',
@@ -170,6 +168,33 @@ async function getAuction(){
     console.log("OWNER_ADDR: "+owner_addr);
 }
 
+async function participateAuction(){
+    var url = new URLSearchParams(window.location.search);
+    owner_addr = url.get("owner_addr");
+
+    var offer = $('#offer').val();
+
+    contract.methods.participateAuction(owner_addr, offer).call({from:senderAddress}).then(function(result) {
+        console.log("The new offer works.");
+    });
+    
+    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress}).on('receipt', function(receipt) {
+        console.log("The new offer has been sent.");
+    });
+
+    fetch('http://localhost:5000/send_offer', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            "owner_addr": owner_addr,
+            "offer": offer
+        })
+    });
+}
+
 function subscribeToEvents(){
 
     contract.events.AuctionOpened( (error, event) => {
@@ -187,5 +212,13 @@ function subscribeToEvents(){
             console.log(event);
         }
 	);
+
+    contract.events.OfferAccepted((error, event) => {
+            if (error) {
+                console.error(error)
+            }
+            console.log(event);
+        }
+    );
 
 }

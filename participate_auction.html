@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<head>
+		<title>StoCar - Participate to the auction</title>
+    </head>
+
+    <body>
+        <form onsubmit="participateAuction(); return false;" id="participate_auction">
+            <label for="offer">Make a new offer:</label><br>
+            <input type="number" id="offer" name="offer"><br>
+            <input type="submit" value="Submit">
+          </form>
+    </body>
+
+    <script src="dist/js-lib/jquery.min.js"></script>
+	<script src="dist/js-lib/web3.min.js"></script>
+    <!-- To make our code tidier, we separate the JS script from the HTML file -->
+	<script src="StoCar.js"></script>
+</html>

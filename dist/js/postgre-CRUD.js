@@ -58,6 +58,18 @@ app.post("/auctions", async(req,res) => {
     }
 });
 
+//UPDATE STARTING_PRICE OF AN AUCTION
+app.post("/send_offer", async(req,res)=>{
+    try{
+        const{owner_addr, offer} = req.body;
+        
+        await pool.query("UPDATE auctions SET starting_price = $1 WHERE owner_addr = $2", [offer, owner_addr]);
+    }
+    catch(err){
+        console.error(err.message);
+    }
+});
+
 //DELETE AN AUCTION
 
 app.listen(5000, () => {
