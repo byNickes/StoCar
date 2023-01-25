@@ -1,6 +1,6 @@
 // Set the contract address
 var contractAddress = "0x5b27956d2A7C0CcB1b3a41EF0607e023a0db21B4"; //NICK
-var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588"; //ANNA
+//var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588"; //ANNA
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -62,7 +62,7 @@ async function openAuction() {
     var maximum_duration = parseInt($('#maximum_duration').val());
     var chassis_id = $('#chassis_id').val();
 
-    var picture_id = 0 //TO DO INSERTION OF PICTURES
+    var picture_id = chassis_id+"1"; //come gestire quando ne carica più di una? più entry nel db?
     
     contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt);
@@ -85,6 +85,30 @@ async function openAuction() {
     }).catch((err)=>{
         
     });
+
+    //pictures
+    const inputElement = document.getElementById("picture_id");
+    const fileList = inputElement.files; /* now you can work with the file list */
+        
+    for (let i = 0, numFiles = fileList.length; i < numFiles; i++) {
+        const image = fileList[i];
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.addEventListener('load', () => {
+            const imagesArray = localStorage.getItem(chassis_id); 
+            let images = [];
+    
+            if (imagesArray) {
+                images = [...JSON.parse(imagesArray)];
+    
+                images.push(reader.result);
+            } else {
+                images.push(reader.result);
+            }
+    
+            localStorage.setItem(chassis_id, JSON.stringify(images));
+        });
+    }
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
     document.getElementById('new_auction').reset();

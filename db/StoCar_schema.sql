@@ -10,7 +10,7 @@ CREATE TABLE "auctions" (
   "owner_addr" varchar,
   "starting_price" int,
   "maximum_duration" int,
-  "picture_id" int,
+  "picture_id" varchar,
   "description" varchar,
   "chassis_id" varchar,
   FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
