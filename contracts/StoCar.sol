@@ -9,7 +9,7 @@ contract StoCar{
         address owner; //user that owns the auction
         address current_winner; //user that has currently sent the highest offer
         uint256 offer; //either starting price or highest offer
-        uint16 duration; //maximum duration of the auction in hours
+        uint duration; //maximum duration of the auction in hours
     }
 
     struct CarNFT{
@@ -24,44 +24,60 @@ contract StoCar{
     event TaxChanged(uint64 new_tax);
     event AuctionOpened(address owner);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
+    event AuctionClosed();
 
     constructor(uint64 starting_tax) {
         creator = payable(msg.sender);
         tax = starting_tax;
     }
 
-    function openAuction(uint256 starting_price, uint16 max_duration) public{
+    modifier CheckExpiry(address owner_addr){
+        if(block.timestamp >= open_auctions[owner_addr].duration){
+            closeAuction(owner_addr);
+        }
+        return;
+        _;
+    }
+
+    function openAuction(uint256 starting_price, uint16 max_duration) payable public{
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
 
         open_auctions[msg.sender] = Auction({
             owner: msg.sender,
             current_winner: address(0),
             offer: starting_price,
-            duration: max_duration
+            duration: block.timestamp+uint(max_duration)
         });
 
         emit AuctionOpened(msg.sender);
     }
 
-    function participateAuction(address owner_addr, uint256 new_offer) public{
+    function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists
-        Auction memory auction = open_auctions[owner_addr];
 
         require(new_offer>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
 
-        uint256 past_offer = auction.offer;
+        uint256 past_offer = open_auctions[owner_addr].offer;
 
-        auction.current_winner = msg.sender;
-        auction.offer = new_offer;
+        open_auctions[owner_addr].current_winner = msg.sender;
+        open_auctions[owner_addr].offer = new_offer;
         emit OfferAccepted(owner_addr, msg.sender, past_offer, new_offer);
     }
 
     function changeFixedTax(uint64 new_tax) public{
-        require(msg.sender == creator, "You are not the creator of the contract."); //maybe cast to payable needed
+        require(msg.sender == creator, "You are not the creator of the contract.");
         
         tax = new_tax;
 
         emit TaxChanged(new_tax);
+    }
+
+    function closeAuction(address owner_addr) public{
+        closed_auctions[owner_addr] = open_auctions[owner_addr];
+
+        delete open_auctions[owner_addr];
+
+        emit AuctionClosed();
     }
 
 }

@@ -17,7 +17,7 @@
         <script src="dist/js-lib/jquery.min.js"></script>
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    <body onload="assegnaEventHandler();">
+    <body onload="assegnaEventHandler(); getAuctions();">
         <div class="header">
             <div class="logo">
                 <a href="index.html">
@@ -26,8 +26,9 @@
             </div>
             <ul class="menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="available_auctions.html">Buy</a></li>
-                <li><a href="open_auction.html">Sell</a>
+                <li><a href="open_auction.html">Sell</a></li>
+                <li><a href="partecipate_auction.html">Buy</a></li>
+                <li><a href="">Available Auctions</a></li><!--TODO-->
             </ul>
             <ul class="ai">
                 <a href="login.html" class="button">Login</a>
@@ -112,10 +113,24 @@
                 <script>
                 </script>
                 <div class="hero__content1">
-                    <a id="partecipa" href="available_auctions.html" class="button_form">Sell</a>
+                    <a id="partecipa" href="partecipate_auction.html" class="button_form">Sell</a>
                     <div id="s2" class="speech-bubble speech-bubble-top"><i>Here you can partecipate to an Auction</i></div>
                 </div>
             </div>
+        </div>
+        <div class="sfondo3">
+            <h4>Available Auctions</h4><br>
+            <table id="list_auctions">
+            <th>owner address</th>
+            <th>winner address</th>
+            <th>chassis_id</th>
+            <th>description</th>
+            <th>maximum duration</th>
+            <th>picture</th>
+            <th>starting price</th>
+        </table>
+        <br><br>
+        <a href="open_auction.html" class="button" >Open a new auction</a>
         </div>
         
         

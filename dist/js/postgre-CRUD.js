@@ -58,21 +58,33 @@ app.post("/auctions", async(req,res) => {
     }
 });
 
-//UPDATE STARTING_PRICE OF AN AUCTION
+//UPDATE STARTING_PRICE AND WINNER_ADDR OF AN AUCTION
 app.post("/send_offer", async(req,res)=>{
     try{
-        const{owner_addr, offer} = req.body;
+        const{owner_addr, winner_addr, offer} = req.body;
         
-        await pool.query("UPDATE auctions SET starting_price = $1 WHERE owner_addr = $2", [offer, owner_addr]);
+        await pool.query("UPDATE auctions SET starting_price = $1, winner_addr = $2 WHERE owner_addr = $3", [offer, winner_addr, owner_addr]);
     }
     catch(err){
         console.error(err.message);
     }
 });
 
-//DELETE AN AUCTION
+//DELETE AN AUCTION (TODO)
+
+//GET A CAR
+app.get("/car_history", async(req,res)=>{
+    try{
+        const chassis_id = req.query.chassis_id;
+
+        const getCar = await pool.query("SELECT * FROM auctions WHERE chassis_id = $1", [chassis_id]);
+        res.json(getCar.rows);
+    }
+    catch(err){
+        console.error(err.message);
+    }
+});
 
 app.listen(5000, () => {
     console.log("Server is listening on on port 5000")
 })
-
