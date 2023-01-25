@@ -8,6 +8,7 @@ CREATE TABLE "cars" (
 
 CREATE TABLE "auctions" (
   "owner_addr" varchar,
+  "winner_addr" varchar,
   "starting_price" int,
   "maximum_duration" int,
   "picture_id" int,

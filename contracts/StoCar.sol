@@ -30,7 +30,7 @@ contract StoCar{
         tax = starting_tax;
     }
 
-    function openAuction(uint256 starting_price, uint16 max_duration) public{
+    function openAuction(uint256 starting_price, uint16 max_duration) payable public{
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
 
         open_auctions[msg.sender] = Auction({
@@ -43,16 +43,15 @@ contract StoCar{
         emit AuctionOpened(msg.sender);
     }
 
-    function participateAuction(address owner_addr, uint256 new_offer) public{
+    function participateAuction(address owner_addr, uint256 new_offer) payable public{
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists
-        Auction memory auction = open_auctions[owner_addr];
 
         require(new_offer>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
 
-        uint256 past_offer = auction.offer;
+        uint256 past_offer = open_auctions[owner_addr].offer;
 
-        auction.current_winner = msg.sender;
-        auction.offer = new_offer;
+        open_auctions[owner_addr].current_winner = msg.sender;
+        open_auctions[owner_addr].offer = new_offer;
         emit OfferAccepted(owner_addr, msg.sender, past_offer, new_offer);
     }
 

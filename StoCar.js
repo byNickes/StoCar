@@ -1,6 +1,5 @@
 // Set the contract address
-var contractAddress = "0x5b27956d2A7C0CcB1b3a41EF0607e023a0db21B4"; //NICK
-var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588"; //ANNA
+var contractAddress = "0x91e4cb7E9D5a031748A70b1DafBb575169D5e3aa";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -52,7 +51,7 @@ async function initialise(contractAddress) {
     });
     */
     
-    // Create additional event listeners to display the results of a play.
+    // Create additional event listeners to display the results
     subscribeToEvents();
 }
 
@@ -116,6 +115,7 @@ async function getAuctions(){
 
             var tr = "<tr>";
             tr += "<td>"+auction.owner_addr+"</td>";
+            tr += "<td>"+auction.winner_addr+"</td>";
             tr += "<td>"+auction.chassis_id+"</td>";
             tr += "<td>"+auction.description+"</td>";
             tr += "<td>"+auction.maximum_duration+"</td>";
@@ -147,25 +147,58 @@ async function getAuction(){
         console.log(auction);
 
         
-        button = '<form action="/participate_auction.html" method="get"> \
-                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
-                    <input type="submit" value="Participate auction"/> \
-                  </form>'
+        button_participate = '<form action="/participate_auction.html" method="get"> \
+                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
+                                <input type="submit" value="Participate auction"/> \
+                              </form>'
+
+        button_car = '<form action="/car_history.html" method="get"> \
+                        <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                        <input type="submit" value="Car history"/> \
+                      </form>'
 
         var tr = "<tr>";
         tr += "<td>"+auction.owner_addr+"</td>";
+        tr += "<td>"+auction.winner_addr+"</td>";
         tr += "<td>"+auction.chassis_id+"</td>";
         tr += "<td>"+auction.description+"</td>";
         tr += "<td>"+auction.maximum_duration+"</td>";
         tr += "<td>"+auction.picture_id+"</td>";
         tr += "<td>"+auction.starting_price+"</td>";
-        tr += "<td>"+button+"</td>";
+        tr += "<td>"+button_participate+"</td>";
+        tr += "<td>"+button_car+"</td>";
         tr += "</tr>";
 
         document.getElementById('auction').innerHTML += tr;
     });
 
     console.log("OWNER_ADDR: "+owner_addr);
+}
+
+//Plot a single car
+async function getCar(){
+    var url = new URLSearchParams(window.location.search);
+    chassis_id = url.get("chassis_id");
+
+    fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        return response.json()
+    }).then((cars) => {
+        car = cars[0];
+        console.log(car);
+
+        var tr = "<tr>";
+        tr += "<td>"+car.owner_addr+"</td>";
+        tr += "<td>"+car.winner_addr+"</td>";
+        tr += "</tr>";
+
+        document.getElementById('car').innerHTML += tr;
+    });
 }
 
 
@@ -175,7 +208,7 @@ async function participateAuction(){
 
     var offer = $('#offer').val();
     
-    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress}).then(function(receipt) {
+    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
         console.log(receipt);
 
         fetch('http://localhost:5000/send_offer', {
@@ -186,6 +219,7 @@ async function participateAuction(){
             },
             body: JSON.stringify({ 
                 "owner_addr": owner_addr,
+                "winner_addr": senderAddress,
                 "offer": offer
             })
         });
@@ -217,7 +251,7 @@ function subscribeToEvents(){
             if (error) {
                 console.error(error)
             }
-            //console.log(event);
+            console.log(event);
         }
     );
 
