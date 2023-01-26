@@ -17,7 +17,7 @@
         <script src="dist/js-lib/jquery.min.js"></script>
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    <body onload="assegnaEventHandler(); getAuctions();">
+    <body onload="assegnaEventHandler(); getAuctions(); loadPictures();">
         <div class="header">
             <div class="logo">
                 <a href="index.html">
@@ -25,10 +25,9 @@
                 </a>
             </div>
             <ul class="menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="open_auction.html">Sell</a></li>
-                <li><a href="partecipate_auction.html">Buy</a></li>
-                <li><a href="">Available Auctions</a></li><!--TODO-->
+              <li><a href="index.html">Home</a></li>
+              <li><a href="available_auctions.html">Buy</a></li>
+              <li><a href="open_auction.html">Sell</a>
             </ul>
             <ul class="ai">
                 <a href="login.html" class="button">Login</a>
@@ -56,9 +55,8 @@
               <div class="carousel-inner">
               <div class="carousel-item active" >
                   <div class="carousel-caption d-none d-md-block">
-                    <img src='img/freccia.gif' style="width:5%;" alt=".." ></img>
-                  <br><br> 
-                    <h1>SLIDE 1</h1>
+                    <!--<img src='img/freccia.gif' style="width:5%;" alt=".." ></img>-->
+                    <img src="" id="slide1"/>
                     <!--TODO: slide 1 che raccoglie info sul sito-->
                   <!--<h3 style='font-weight: bold;color:rgb(255, 255, 255); font-style: oblique;'>Crea il tuo sondaggio o questionario online con Doxam</h3>
                     <p>Progetta sondaggi,questionari e quiz con varie modalità di risposta</p>-->

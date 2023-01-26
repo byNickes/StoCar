@@ -1,6 +1,6 @@
 // Set the contract address
 var contractAddress = "0x91e4cb7E9D5a031748A70b1DafBb575169D5e3aa"; //NICK
-//var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588"; //ANNA
+//var contractAddress = "0x19f3Bd262bB0DDcD72c6A2b4A15fE7F2e19A2cb3"; //ANNA
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -62,7 +62,7 @@ async function openAuction() {
     var maximum_duration = parseInt($('#maximum_duration').val());
     var chassis_id = $('#chassis_id').val();
 
-    var picture_id = chassis_id+"1"; //come gestire quando ne carica più di una? più entry nel db?
+    var picture_id = 0;
     
     contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt);
@@ -88,30 +88,64 @@ async function openAuction() {
 
     //pictures
     const inputElement = document.getElementById("picture_id");
-    const fileList = inputElement.files; /* now you can work with the file list */
-        
-    for (let i = 0, numFiles = fileList.length; i < numFiles; i++) {
-        const image = fileList[i];
-        const reader = new FileReader();
-        reader.readAsDataURL(image);
-        reader.addEventListener('load', () => {
-            const imagesArray = localStorage.getItem(chassis_id); 
-            let images = [];
-    
-            if (imagesArray) {
-                images = [...JSON.parse(imagesArray)];
-    
-                images.push(reader.result);
-            } else {
-                images.push(reader.result);
-            }
-    
-            localStorage.setItem(chassis_id, JSON.stringify(images));
-        });
-    }
+    const image = inputElement.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.addEventListener('load', () => {
+        const imagesArray = localStorage.getItem('images'); 
+        let images = [];
+
+        if (imagesArray) {
+            images = [...JSON.parse(imagesArray)];
+
+            images.push(reader.result);
+        } else {
+            images.push(reader.result);
+        }
+
+        localStorage.setItem(chassis_id, JSON.stringify(images));
+    });
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
     document.getElementById('new_auction').reset();
+}
+
+/*???????
+document.getElementById("picture_id").addEventListener('change',(event)=>{
+        const image=event.target.files[0];
+        const reader=new FileReader();
+        reader.readAsDataURL(image);
+        reader.addEventListener('load', ()=>{
+            localStorage.setItem('image',reader.result);
+        })
+    });
+*/
+
+async function loadPictures(){
+    var j=1;
+    fetch('http://localhost:5000/auctions/', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        return response.json()
+    }).then((auctions) => {
+        console.log(auctions)
+        //for(let i = auctions.length-1; i>auctions.length-5; i--){ //le più recenti
+        i=0
+            console.log(auctions[i]);
+            var auction = auctions[i];
+            document.getElementById('slide'+j).setAttribute('alt',auction.chassis_id);
+            var dataImage=localStorage.getItem('images');
+            bannerImg=document.getElementById('slide'+j)
+            bannerImg.setAttribute('src','data:image/png;base64,'+dataImage); //COSÌ FUNZIONA MA NON CARICA IMG, WHY?
+            
+            //j++;
+
+        //}
+    });
 }
 
 //Plots all the auctions in a table
