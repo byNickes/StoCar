@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x2EDDa44543365275911bEd9b88B58Fa073CEE74E";
+var contractAddress = "0xe403fe5d93a530B1d897Ad650517cE3e40a21049";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -11,8 +11,14 @@ $(window).on('load', function() {
     initialise(contractAddress);
 });
 
+
 //Initializes JS environment in the index page
 async function onLoad_index(){
+    await initialise(contractAddress);
+    getOpenAuctions(); 
+}
+
+async function onLoad_available_auctions(){
     await initialise(contractAddress);
     getOpenAuctions(); 
 }
@@ -159,7 +165,7 @@ async function getOpenAuctions(){
             console.log(auction)
 
             button_participate = '<form action="/participate_auction.html" method="get"> \
-                                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
+                                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
                                     <input type="submit" value="Participate auction"/> \
                                   </form>'
 
@@ -265,7 +271,7 @@ async function participateAuction(){
     
     contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
         console.log(receipt);
-
+        /*
         fetch('http://localhost:5000/send_offer', {
             method: 'POST',
             headers: {
@@ -278,6 +284,7 @@ async function participateAuction(){
                 "offer": offer
             })
         });
+        */
     }).catch((err)=>{
 
     });
