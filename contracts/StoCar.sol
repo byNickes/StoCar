@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
 pragma solidity >=0.8.0 <0.9.0;
 
-contract StoCar{
+contract StoCar{ 
     address payable private creator;
     uint64 public tax; //applied transaction tax in WEI
     
@@ -57,14 +57,15 @@ contract StoCar{
         emit AuctionOpened(msg.sender);
     }
 
-    function getOpenAuctions() public view returns (Auction[] memory open_auctions_list){
-        
+    
+    function getOpenAuctions() public view returns (Auction[] memory){
+        Auction[] memory ret = new Auction[](sellers.length);
+
         for(uint i = 0; i < sellers.length; i++){
             address seller = sellers[i];
-            open_auctions_list[i] = open_auctions[seller];
+            ret[i] = open_auctions[seller];
         }
-
-        return open_auctions_list;
+        return ret;
     }
 
     function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){

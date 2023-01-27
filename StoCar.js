@@ -1,16 +1,15 @@
 // Set the contract address
-<<<<<<< HEAD
-var contractAddress = "0xc4140b3fB4087C745dFc193EE509278670F5A92d";
-=======
-var contractAddress = "0x91e4cb7E9D5a031748A70b1DafBb575169D5e3aa"; //NICK
-//var contractAddress = "0x19f3Bd262bB0DDcD72c6A2b4A15fE7F2e19A2cb3"; //ANNA
->>>>>>> refs/remotes/origin/development
+var contractAddress = "0x2EDDa44543365275911bEd9b88B58Fa073CEE74E";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
 var senderAddress = "0x0";
 // Set contract ABI and the contract
 var contract = null;
+
+$(window).on('load', function() {
+    initialise(contractAddress);
+});
 
 //Initializes JS environment in the index page
 async function onLoad_index(){
@@ -87,7 +86,7 @@ async function openAuction() {
         */
     }).catch((err)=>{
         
-    });=
+    });
 
     //pictures
     const inputElement = document.getElementById("picture_id");
@@ -153,8 +152,36 @@ async function loadPictures(){
 //Plots all the auctions in a table
 async function getOpenAuctions(){
     console.log("contract: "+contract);
-    contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(receipt) {
-        console.log(receipt);
+    contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
+        
+        for(let i = 0; i < auctions.length; i++){
+            auction = auctions[i];
+            console.log(auction)
+
+            button_participate = '<form action="/participate_auction.html" method="get"> \
+                                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
+                                    <input type="submit" value="Participate auction"/> \
+                                  </form>'
+
+            button_car = '<form action="/car_history.html" method="get"> \
+                            <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                            <input type="submit" value="Car history"/> \
+                          </form>'
+
+            var tr = "<tr>";
+            tr += "<td>"+auction.owner+"</td>";
+            tr += "<td>"+auction.current_winner+"</td>";
+            tr += "<td>"+auction.duration+"</td>";
+            tr += "<td>"+auction.offer+"</td>";
+            tr += "<td>"+button_participate+"</td>";
+            tr += "<td>"+button_car+"</td>";
+            tr += "</tr>";
+
+            document.getElementById('list_auctions').innerHTML += tr;
+        }
+
+    }).catch((err)=>{
+        console.log(err);
     });
 }
 
