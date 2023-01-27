@@ -5,20 +5,22 @@ contract StoCar{
     address payable private creator;
     uint64 public tax; //applied transaction tax in WEI
     
-    struct Auction{
-        address owner; //user that owns the auction
-        address current_winner; //user that has currently sent the highest offer
-        uint256 offer; //either starting price or highest offer
-        uint duration; //maximum duration of the auction in hours
-    }
-
     struct CarNFT{
         bytes32 id; //hash of the chassis number computed with keccak256
     }
 
-    mapping(address=>Auction) open_auctions; //list of all the auctions where the keys
-                                             //is owner's address
-    mapping(address=>Auction) closed_auctions; //list of all the closed auctions
+    struct Auction{
+        address owner; //user that owns the auction
+        address current_winner; //user that has currently sent the highest offer
+        uint256 offer; //either starting price or highest offer
+        uint256 start_timestamp; //timestamp at which the auction started
+        uint duration; //maximum duration of the auction in hours
+    }
+
+    address[] public sellers;
+    mapping(address=>Auction) public open_auctions; //list of all the auctions where the keys
+                                                    //is owner's address
+    mapping(address=>Auction) public closed_auctions; //list of all the closed auctions
 
     //Events declaration
     event TaxChanged(uint64 new_tax);
@@ -34,8 +36,8 @@ contract StoCar{
     modifier CheckExpiry(address owner_addr){
         if(block.timestamp >= open_auctions[owner_addr].duration){
             closeAuction(owner_addr);
+            return;
         }
-        return;
         _;
     }
 
@@ -46,10 +48,23 @@ contract StoCar{
             owner: msg.sender,
             current_winner: address(0),
             offer: starting_price,
-            duration: block.timestamp+uint(max_duration)
+            start_timestamp: block.timestamp,
+            duration: block.timestamp+uint(max_duration) //CAMBIARE PERCHE' VA PORTATA IN SECONDI,
         });
 
+        sellers.push(msg.sender);
+
         emit AuctionOpened(msg.sender);
+    }
+
+    function getOpenAuctions() public view returns (Auction[] memory open_auctions_list){
+        
+        for(uint i = 0; i < sellers.length; i++){
+            address seller = sellers[i];
+            open_auctions_list[i] = open_auctions[seller];
+        }
+
+        return open_auctions_list;
     }
 
     function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
