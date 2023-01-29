@@ -1,11 +1,14 @@
 // Set the contract address
-var contractAddress = "0xe403fe5d93a530B1d897Ad650517cE3e40a21049";
+var contractAddress = "0x26ce60F4D1f1B0266F5e527aEbc393cC432f33a3";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
 var senderAddress = "0x0";
 // Set contract ABI and the contract
 var contract = null;
+
+// Prevent forms from submitting and reloading the page
+$("form").submit(function(e){e.preventDefault();});
 
 $(window).on('load', function() {
     initialise(contractAddress);
@@ -21,6 +24,11 @@ async function onLoad_index(){
 async function onLoad_available_auctions(){
     await initialise(contractAddress);
     getOpenAuctions(); 
+}
+
+async function onLoad_auction(){
+    await initialise(contractAddress);
+    getOpenAuction(); 
 }
 
 async function initialise(contractAddress) {
@@ -67,10 +75,8 @@ async function openAuction() {
     var chassis_id = $('#chassis_id').val();
 
     var picture_id = 0;
-    
-    console.log("contract: "+contract);
 
-    contract.methods.openAuction(starting_price, maximum_duration).send({from:senderAddress}).then(function(receipt) {
+    contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt);
 
         /*
@@ -91,7 +97,7 @@ async function openAuction() {
         });
         */
     }).catch((err)=>{
-        
+        console.log(err);
     });
 
     //pictures
@@ -164,9 +170,9 @@ async function getOpenAuctions(){
             auction = auctions[i];
             console.log(auction)
 
-            button_participate = '<form action="/participate_auction.html" method="get"> \
+            button_participate = '<form action="/auction.html" method="get"> \
                                     <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                    <input type="submit" value="Participate auction"/> \
+                                    <input type="submit" value="See auction"/> \
                                   </form>'
 
             button_car = '<form action="/car_history.html" method="get"> \
@@ -177,7 +183,7 @@ async function getOpenAuctions(){
             var tr = "<tr>";
             tr += "<td>"+auction.owner+"</td>";
             tr += "<td>"+auction.current_winner+"</td>";
-            tr += "<td>"+auction.duration+"</td>";
+            tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
             tr += "<td>"+auction.offer+"</td>";
             tr += "<td>"+button_participate+"</td>";
             tr += "<td>"+button_car+"</td>";
@@ -192,10 +198,38 @@ async function getOpenAuctions(){
 }
 
 //Plot a single auction
-async function getAuction(){
+async function getOpenAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
 
+    contract.methods.getOpenAuction(owner_addr).call({from:senderAddress}).then(function(auction) {
+        console.log(web3.utils.toAscii(auction.car.chassis_id));
+
+        button_participate = '<form action="/participate_auction.html" method="get"> \
+                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                <input type="submit" value="Participate auction"/> \
+                              </form>'
+
+        button_car = '<form action="/car_history.html" method="get"> \
+                        <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.car.chassis_id+'"/> \
+                        <input type="submit" value="Car history"/> \
+                      </form>'
+
+        var tr = "<tr>";
+        tr += "<td>"+auction.owner+"</td>";
+        tr += "<td>"+auction.current_winner+"</td>";
+        tr += "<td>"+web3.utils.toAscii(auction.car.chassis_id)+"</td>";
+        //tr += "<td>"+auction.description+"</td>";
+        tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
+        //tr += "<td>"+auction.picture_id+"</td>";
+        tr += "<td>"+auction.offer+"</td>";
+        tr += "<td>"+button_participate+"</td>";
+        tr += "<td>"+button_car+"</td>";
+        tr += "</tr>";
+
+        document.getElementById('auction').innerHTML += tr;
+    });
+    /*
     fetch('http://localhost:5000/auction?owner_addr='+owner_addr, {
         method: 'GET',
         headers: {
@@ -235,6 +269,7 @@ async function getAuction(){
     });
 
     console.log("OWNER_ADDR: "+owner_addr);
+    */
 }
 
 //Plot a single car
