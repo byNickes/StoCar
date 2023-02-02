@@ -29,7 +29,7 @@ app.get("/auctions", async(req,res) => {
     }
 });
 //GET AN AUCTION
-app.get("/auction", async(req,res)=>{
+app.get("/auctions", async(req,res)=>{
     try{
         const owner_addr = req.query.owner_addr;
         

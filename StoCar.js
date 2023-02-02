@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x8A609462B7598af4Ce5094E94235E15C37176ECa";
+var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -106,7 +106,7 @@ async function openAuction() {
     });
 
 
-    
+    //elisa
     //var fileInput = document.getElementById('picture_id');
     //var file = fileInput.files[0];
     ////////////theoretically file is saved in db
@@ -131,7 +131,7 @@ async function openAuction() {
         fileDisplayArea.innerHTML = "File not supported!";
     }*/
 
-    /* //pictures
+    /* //pictures anna
     const inputElement = document.getElementById("picture_id");
     const image = inputElement.files[0];
     const reader = new FileReader();
@@ -204,9 +204,30 @@ async function getOpenAuctions(){
             console.log(auction)
             ownerAddr = auction.owner
 
-            //find in db
+            button_participate = '<form action="/auction.html" method="get"> \
+                                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                    <input type="submit" value="See auction"/> \
+                                </form>'
+
+            button_car = '<form action="/car_history.html" method="get"> \
+                            <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                            <input type="submit" value="Car history"/> \
+                        </form>'
+
+            var tr = "<tr>";
+            tr += "<td>"+auction.owner+"</td>";
+            tr += "<td>"+auction.current_winner+"</td>";
+            tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
+            tr += "<td>"+auction.offer+"</td>";
+            tr += "<td>"+"pippoplutopaperino"+"</td>";
+            tr += "<td>"+button_participate+"</td>";
+            tr += "<td>"+button_car+"</td>";
+            tr += "</tr>";
+
+            document.getElementById('list_auctions').innerHTML += tr;
+            /*//find in db
             //fetch('http://localhost:5000/auction?owner_addr='+auction.owner+'&chassis_id='+auction.chassis_id, {
-            fetch('http://localhost:5000/auction?owner_addr='+ownerAddr, {
+            fetch('http://localhost:5000/auctions?owner_addr='+ownerAddr, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -238,7 +259,7 @@ async function getOpenAuctions(){
                 tr += "</tr>";
 
                 document.getElementById('list_auctions').innerHTML += tr;
-            });
+            });*/
         }
 
     }).catch((err)=>{
