@@ -45,20 +45,20 @@ app.get("/auction", async(req,res)=>{
 //CREATE AN AUCTION
 app.post("/auctions", async(req,res) => {
     try{
-        const {owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id} = req.body;
+        const {owner_addr, chassis_id, picture_id, description} = req.body;
         var car = await pool.query("SELECT chassis_id FROM cars WHERE chassis_id = $1", [chassis_id]);
         if(car.rowCount == 0){
             await pool.query("INSERT INTO cars (chassis_id) VALUES ($1)", [chassis_id]);
         }
 
-        await pool.query("INSERT INTO auctions (owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id) VALUES ($1, $2, $3, $4, $5, $6)", [owner_addr, starting_price, maximum_duration, picture_id, description, chassis_id]);
+        await pool.query("INSERT INTO auctions (owner_addr, chassis_id, picture_id, description) VALUES ($1, $2, $3, $4)", [owner_addr, chassis_id, picture_id, description]);
     }
     catch (err){
         console.error(err.message);
     }
 });
 
-//UPDATE STARTING_PRICE AND WINNER_ADDR OF AN AUCTION
+/* //UPDATE STARTING_PRICE AND WINNER_ADDR OF AN AUCTION
 app.post("/send_offer", async(req,res)=>{
     try{
         const{owner_addr, winner_addr, offer} = req.body;
@@ -68,7 +68,7 @@ app.post("/send_offer", async(req,res)=>{
     catch(err){
         console.error(err.message);
     }
-});
+});*/
 
 //DELETE AN AUCTION (TODO)
 
