@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x26ce60F4D1f1B0266F5e527aEbc393cC432f33a3";
+var contractAddress = "0x2867F65afAC8CD8bBA8f983c5f0e69Bd0BD33928";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -75,9 +75,13 @@ async function openAuction() {
     var chassis_id = $('#chassis_id').val();
 
     var picture_id = 0;
+    var inside = 0;
 
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
-        console.log(receipt);
+        console.log(receipt); //MA QUESTO STAMPA EFFETTIVAMENTE QUALCOSA?????????
+        inside = 1;
+        document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
+        document.getElementById('new_auction').reset();
 
         /*
         fetch('http://localhost:5000/auctions/', {
@@ -99,7 +103,6 @@ async function openAuction() {
     }).catch((err)=>{
         console.log(err);
     });
-
     //pictures
     const inputElement = document.getElementById("picture_id");
     const image = inputElement.files[0];
@@ -119,8 +122,38 @@ async function openAuction() {
 
         localStorage.setItem(chassis_id, JSON.stringify(images));
     });
-    document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
+    document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
     document.getElementById('new_auction').reset();
+
+    /*CAPIRE COME STAMPARE ALL'UTENTE CHE QUALCOSA è ANDATO STORTO
+    contract.methods.existingAddress.send({from:senderAddress}).then(function(ret){
+        if(ret == 1){
+            document.getElementById('new_auction').outerHTML += "<br><h4>Operation Refused...Be careful!</h4>";
+            document.getElementById('new_auction').reset();
+        }else{
+            //pictures
+            const inputElement = document.getElementById("picture_id");
+            const image = inputElement.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(image);
+            reader.addEventListener('load', () => {
+                const imagesArray = localStorage.getItem('images'); 
+                let images = [];
+    
+                if (imagesArray) {
+                    images = [...JSON.parse(imagesArray)];
+    
+                    images.push(reader.result);
+                } else {
+                    images.push(reader.result);
+                }
+    
+                localStorage.setItem(chassis_id, JSON.stringify(images));
+            });
+            document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
+            document.getElementById('new_auction').reset();
+        }
+    });*/
 }
 
 /*???????

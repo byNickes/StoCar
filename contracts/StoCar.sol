@@ -46,7 +46,6 @@ contract StoCar{
 
     function openAuction(uint256 starting_price, uint16 max_duration, bytes32 chassis_id) payable public{
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
-
         require(max_duration > 0, "The duration has to be greater than 0.");
 
         uint in_secs = max_duration*3600;
@@ -119,6 +118,13 @@ contract StoCar{
         delete open_auctions[owner_addr];
 
         emit AuctionClosed();
+    }
+
+    function existingAddress() internal view returns(uint ret){
+        if(open_auctions[msg.sender].owner != address(0)){
+            return 1;
+        }
+        return 0;
     }
 
 }
