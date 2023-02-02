@@ -8,6 +8,15 @@ CREATE TABLE "cars" (
 
 CREATE TABLE "auctions" (
   "owner_addr" varchar,
+  "chassis_id" varchar,
+  "picture_id" varchar,
+  "description" varchar,
+  FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
+  PRIMARY KEY ("owner_addr","chassis_id")
+);
+
+/*CREATE TABLE "auctions" (
+  "owner_addr" varchar,
   "winner_addr" varchar,
   "starting_price" int,
   "maximum_duration" int,
@@ -16,4 +25,4 @@ CREATE TABLE "auctions" (
   "chassis_id" varchar,
   FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
   PRIMARY KEY ("owner_addr")
-);
+);*/
