@@ -125,35 +125,6 @@ async function openAuction() {
     document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
     document.getElementById('new_auction').reset();
 
-    /*CAPIRE COME STAMPARE ALL'UTENTE CHE QUALCOSA è ANDATO STORTO
-    contract.methods.existingAddress.send({from:senderAddress}).then(function(ret){
-        if(ret == 1){
-            document.getElementById('new_auction').outerHTML += "<br><h4>Operation Refused...Be careful!</h4>";
-            document.getElementById('new_auction').reset();
-        }else{
-            //pictures
-            const inputElement = document.getElementById("picture_id");
-            const image = inputElement.files[0];
-            const reader = new FileReader();
-            reader.readAsDataURL(image);
-            reader.addEventListener('load', () => {
-                const imagesArray = localStorage.getItem('images'); 
-                let images = [];
-    
-                if (imagesArray) {
-                    images = [...JSON.parse(imagesArray)];
-    
-                    images.push(reader.result);
-                } else {
-                    images.push(reader.result);
-                }
-    
-                localStorage.setItem(chassis_id, JSON.stringify(images));
-            });
-            document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
-            document.getElementById('new_auction').reset();
-        }
-    });*/
 }
 
 /*???????
