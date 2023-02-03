@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588";
+var contractAddress = "0x15c72Cf2FE28c10Ff730392968e0F0684E7800D7";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -79,15 +79,14 @@ async function openAuction() {
     //var fileInput = document.getElementById('picture_id');
     //var file = fileInput.files[0];
 
+    document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not computing gas? Maybe it's an Operation Not Permitted...</h4>";
+    document.getElementById('new_auction').reset();
+
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt); //MA QUESTO STAMPA EFFETTIVAMENTE QUALCOSA????????? SI, L'INFO SULLA TRANSAZIONE
 
+        document.getElementById('new_auction').outerHTML += "<br><h4>Oh well: Success!</h4>";
         document.getElementById('new_auction').reset();
-        document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
-        //document.getElementById('success').innerText += "<br><h4>Success!</h4>";
-        document.getElementById('new_auction').reset();
-
-
 
         fetch('http://localhost:5000/auctions/', {
             method: 'POST',
@@ -154,9 +153,9 @@ async function openAuction() {
         localStorage.setItem(chassis_id, JSON.stringify(images));
     });*/
 
-    document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
+    //document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not computing gas? Maybe it's an Operation Not Permitted...</h4>";
     //document.getElementById('new_auction').innerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
-    document.getElementById('new_auction').reset();
+    //document.getElementById('new_auction').reset();
 
 }
 
@@ -202,16 +201,26 @@ async function loadPictures(){
 async function getOpenAuctions(){
     console.log("contract: "+contract);
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
-        
         for(let i = 0; i < auctions.length; i++){
             auction = auctions[i];
-            console.log(auction)
             ownerAddr = auction.owner
+            if(ownerAddr == 0){
+                continue;
+            }
+            console.log(auction)
 
-            button_participate = '<form action="/auction.html" method="get"> \
+            if(auction.owner != senderAddress){
+                button_participate = '<form action="/auction.html" method="get"> \
+                                        <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                        <input type="submit" value="See auction"/> \
+                                    </form>'
+            }else {//change it into close auction button
+                button_participate = '<form action="/close_auction.html" method="get"> \
                                     <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                    <input type="submit" value="See auction"/> \
+                                    <input type="submit" value="Close auction"/> \
                                 </form>'
+            }
+            
 
             button_car = '<form action="/car_history.html" method="get"> \
                             <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
@@ -304,7 +313,7 @@ async function getOpenAuction(){
         document.getElementById('auction').innerHTML += tr;
     });
     
-    fetch('http://localhost:5000/auction?owner_addr='+owner_addr, {
+    fetch('http://localhost:5000/auctions?owner_addr='+owner_addr, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -375,8 +384,11 @@ async function getCar(){
 async function participateAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
-
     var offer = $('#offer').val();
+
+    /*contract.methods.getContractBalance().send({from:senderAddress}).then(function(receipt){
+        console.log("CONTRACT BALANCE BEFORE: "+receipt);
+    });*/
     
     contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
         console.log(receipt);
@@ -397,10 +409,26 @@ async function participateAuction(){
         */
         
     }).catch((err)=>{
-
+        console.error(err.message);
     });
-
+    /*contract.methods.getContractBalance().send({from:senderAddress}).then(function(receipt){
+        console.log("CONTRACT BALANCE AFTER: "+receipt);
+    });*/
 }
+
+async function closeAuction(){
+    var url = new URLSearchParams(window.location.search);
+    owner_addr = url.get("owner_addr");
+    document.getElementById('close_auction').outerHTML += "<br><h4>Wait...Do you really want to close the auction?</h4>";
+    contract.methods.closeAuction(owner_addr).send({from:senderAddress}).then(function(receipt) {
+        console.log("Auction Closed: "+receipt);
+        document.getElementById('close_auction').outerHTML += "<br><h4>Oh well, you succeeded: The auction is now closed!</h4>";
+        document.getElementById('close_auction').reset();        
+    }).catch((err)=>{
+        console.log("Close Auction failed: "+err.message);
+    });
+}
+
 function subscribeToEvents(){
 
     contract.events.AuctionOpened( (error, event) => {
