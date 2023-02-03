@@ -18,7 +18,7 @@ contract StoCar{
         uint duration; //maximum duration of the auction in hours
     }
 
-    address[] public sellers;
+    address[] public sellers; //list of all the sellers
 
     mapping(address=>Auction) public open_auctions; //list of all the auctions where the keys
                                                     //is owner's address
@@ -120,6 +120,10 @@ contract StoCar{
         emit AuctionClosed();
     }
 
+
+    function getCarHistory(bytes32 chassis_id) view public returns (Auction[] memory){
+        
+}
     function existingAddress() internal view returns(uint ret){
         if(open_auctions[msg.sender].owner != address(0)){
             return 1;
@@ -127,4 +131,3 @@ contract StoCar{
         return 0;
     }
 
-}

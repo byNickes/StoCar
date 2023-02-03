@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x1F00dD7d70265d2e2900d2ff4dF3CED047796407";
+var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -401,7 +401,6 @@ async function participateAuction(){
     });
 
 }
-
 function subscribeToEvents(){
 
     contract.events.AuctionOpened( (error, event) => {
