@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x6e9cE8231314e987819b57eE032Ad6c0779819eb";
+var contractAddress = "0xFfD04b2Dc5af2D93948E386A9f4C6d954376ea5e";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -178,6 +178,7 @@ async function printTax(){
         console.log(tax);
         document.getElementById('tax').outerHTML += tax+" Wei";
         //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').disabled = true
         document.getElementById('tax').reset();
     }).catch((err)=>{
         console.error(err);
@@ -214,16 +215,8 @@ async function loadPictures(){
 //Plots all the auctions in a table
 async function getOpenAuctions(){
     //console.log("contract: "+contract); pretty useless, it's just an object
-    
-    //print fixed tax
-    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
-        console.log(tax);
-        document.getElementById('tax').outerHTML += tax+" Wei";
-        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
-        document.getElementById('tax').reset();
-    }).catch((err)=>{
-        console.error(err);
-    });
+
+    //object.addEventListener("load", printTax());
 
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
         for(let i = 0; i < auctions.length; i++){
@@ -391,16 +384,6 @@ async function getCar(){
     var url = new URLSearchParams(window.location.search);
     chassis_id = url.get("chassis_id");
 
-    //print fixed tax
-    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
-        console.log(tax);
-        document.getElementById('tax').outerHTML += tax+" Wei";
-        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
-        document.getElementById('tax').reset();
-    }).catch((err)=>{
-        console.error(err);
-    });
-
     fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
         method: 'GET',
         headers: {
@@ -426,19 +409,9 @@ async function participateAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
     var offer = $('#offer').val(); //Wei
-
-    //print fixed tax
-    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
-        console.log(tax);
-        document.getElementById('tax').outerHTML += tax+" Wei";
-        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
-        document.getElementById('tax').reset();
-    }).catch((err)=>{
-        console.error(err);
-    });
     
     //contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
-    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, offer}).then(function(receipt) {
+    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:offer}).then(function(receipt) {
         console.log(receipt);
         
         /* DA TOGLIERE
@@ -464,15 +437,6 @@ async function participateAuction(){
 
 async function closeAuction(){
     var url = new URLSearchParams(window.location.search);
-    //print fixed tax
-    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
-        console.log(tax);
-        document.getElementById('tax').outerHTML += tax+" Wei";
-        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
-        document.getElementById('tax').reset();
-    }).catch((err)=>{
-        console.error(err);
-    });
 
     owner_addr = url.get("owner_addr");
     document.getElementById('close_auction').outerHTML += "<br><h4>Wait...Do you really want to close the auction?</h4>";
