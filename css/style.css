@@ -117,8 +117,9 @@
 }
 .ai{
     position: relative;
-    top:30px;
-    left:8.5px;
+    top:25px;
+    left:5px;
+    right:5px;
 }
 
 .ai2{
@@ -471,3 +472,8 @@ h2{font-size: 60px; font-style: oblique; text-align: center; }
     width:25px;
     height: 25px;
 }
+
+th, td {
+    padding: 2px;
+  }
+  

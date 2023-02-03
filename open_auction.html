@@ -31,6 +31,7 @@
                 <li><a href="open_auction.html">Sell</a>
             </ul>
             <ul class="ai">
+                <div onload="printTax();" id="tax"><li>Fixed Tax:</li></div>
                 <a href="login.html" class="button">Login</a>
                 <a href="signup.html" class="button">Sign Up</a>
             </ul>
@@ -49,7 +50,7 @@
             <form onsubmit="openAuction();" id="new_auction">
                 <label for="description">Car description:</label><br>
                 <input type="text" id="description" name="description"><br>
-                <label for="starting_price">Auction starting price:</label><br>
+                <label for="starting_price">Auction starting price (in Wei):</label><br>
                 <input type="number" id="starting_price" name="starting_price"><br>
                 <label for="maximum_duration">Auction maximum duration (hours):</label><br>
                 <input type="number" id="maximum_duration" name="maximum_duration"><br>

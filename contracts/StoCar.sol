@@ -3,8 +3,6 @@ pragma solidity >=0.8.0 <0.9.0;
 
 contract StoCar{ 
     address payable private creator;
-
-    uint64 public tax; //applied transaction tax in WEI
     
     struct CarNFT{
         bytes32 chassis_id; //hash of the chassis number computed with keccak256
@@ -15,10 +13,13 @@ contract StoCar{
         address current_winner; //user that has currently sent the highest offer
         uint256 offer; //either starting price or highest offer
         CarNFT car;
+        uint256 starting_price;
         uint256 start_timestamp; //timestamp at which the auction started
         uint duration; //maximum duration of the auction in hours
     }
-
+    
+    uint64 public tax; //applied transaction tax in WEI
+    
     uint256 public balance; //keep the balance of the contract
 
     address[] internal sellers; //list of all the sellers
@@ -36,6 +37,7 @@ contract StoCar{
     event AuctionOpened(address owner);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
+    event Debug(uint value1,uint value2, uint value3);
 
     constructor(uint64 starting_tax) {
         creator = payable(msg.sender);
@@ -53,8 +55,9 @@ contract StoCar{
     }
 
     function openAuction(uint256 starting_price, uint16 max_duration, bytes32 chassis_id) payable public{
-        require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
         require(max_duration > 0, "The duration has to be greater than 0.");
+        require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
+        require(starting_price >= tax, "The starting price of an auction has to be greater or equal than the fixed tax.");
         require(tokens_open[chassis_id].chassis_id == bytes4(0), "You cannot sell a car that someone else is already selling!!");
 
         //change duration from hours to seconds
@@ -74,8 +77,9 @@ contract StoCar{
         open_auctions[msg.sender] = Auction({
             owner: msg.sender,
             current_winner: address(0),
+            offer: 0,
             car: car,
-            offer: starting_price,
+            starting_price: starting_price,
             start_timestamp: block.timestamp,
             duration: block.timestamp+in_secs
         });
@@ -137,33 +141,43 @@ contract StoCar{
         return ret;
     }
 
-    function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
+    //function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
+    function participateAuction(address owner_addr, uint256 new_offer) payable public {
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists
-        require((new_offer)>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
-
-
-        //require((new_offer-(tax))>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
+        
+        //require((new_offer)>open_auctions[owner_addr].offer, "The new offer has to be greather than the current.");
+        require((new_offer-tax)>open_auctions[owner_addr].starting_price, "The new offer has to be greather than the current.");
 
         //when the new offer is accepted, the past offer is to be returned to the account who sent it
-        //let's see if it works
-        //balance += tax;
-        //payable(open_auctions[owner_addr].current_winner).transfer(open_auctions[owner_addr].offer);
-
+        balance += tax;
+        payable(open_auctions[owner_addr].current_winner).transfer(open_auctions[owner_addr].offer); //now it should be in Weis
+        emit Debug(open_auctions[owner_addr].offer, tax, new_offer);
+        
 
         uint256 past_offer = open_auctions[owner_addr].offer;
         open_auctions[owner_addr].current_winner = msg.sender;
-        open_auctions[owner_addr].offer = new_offer; //detract the fixed tax from the total amount offered
 
-        //open_auctions[owner_addr].offer = (new_offer-tax); //detract the fixed tax from the total amount offered
-        emit OfferAccepted(owner_addr, msg.sender, past_offer, new_offer);
+        //open_auctions[owner_addr].offer = new_offer;
+        open_auctions[owner_addr].offer = (new_offer-tax); //detract the fixed tax from the total amount offered
+        
+        emit OfferAccepted(owner_addr, msg.sender, past_offer, (new_offer-tax));
     }
+
+    /*non so se serva fare un'altra funzione
+    function transferEther(address, _to, uint _amount) public payable {
+        address(_to).transfer(_amount);
+    }*/
 
     function changeFixedTax(uint64 new_tax) public{
         require(msg.sender == creator, "You are not the creator of the contract.");
         
-        tax = new_tax;
-
+        tax = new_tax*1e18;
         emit TaxChanged(new_tax);
+    }
+
+    function withdraw() public{
+        require(msg.sender == creator, "You are not the creator of the contract.");
+        payable(msg.sender).transfer(balance);
     }
 
     /*function getContractBalance() public view returns(uint256){
@@ -173,11 +187,15 @@ contract StoCar{
     function closeAuction(address owner_addr) public{
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists (just to be sure)
 
-        //prima di chiudere qui si dovrebbe gestire la tassa
-        //balance += tax; //tax is paid for opening the auction (or better detracted from the value that is trasnferred to the owner of the auction) 
-        //open_auctions[owner_addr].offer -= tax;
-        payable(open_auctions[owner_addr].owner).transfer(open_auctions[owner_addr].offer); //updated value is trasnferred to the auction's owner
-
+        //tax is paid for opening the auction (or better detracted from the value that is trasnferred to the owner of the auction)
+        //but only if someone made an offer and the token exchange is finalized, otherwise no tax is detracted, and no token is sent 
+        if(open_auctions[owner_addr].offer != 0){
+            open_auctions[owner_addr].offer -= tax;
+            balance += tax;
+            /////////////////////////SEND TOKEN HERE IN SOME WAY: MAYBE MAPPING AND HERE ADD TOKEN FOR THE WINNER ADDR
+        }
+        payable(open_auctions[owner_addr].owner).transfer(open_auctions[owner_addr].offer); //updated value is transferred to the auction's owner
+        
         //now the contract state is updated
         closed_auctions[owner_addr] = open_auctions[owner_addr]; //add auction to closed auctions
         tokens_closed[open_auctions[owner_addr].car.chassis_id] = tokens_open[open_auctions[owner_addr].car.chassis_id]; //add token to tokens of closed auctions
@@ -198,5 +216,11 @@ contract StoCar{
         }
         return 0;
     }
+
+    function getTax() public view returns(uint64 ret){
+        //emit Debug(tax,tax,tax);
+        return tax;
+    }
+
 
 }

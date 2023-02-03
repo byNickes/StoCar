@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x15c72Cf2FE28c10Ff730392968e0F0684E7800D7";
+var contractAddress = "0x6e9cE8231314e987819b57eE032Ad6c0779819eb";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -70,7 +70,8 @@ async function initialise(contractAddress) {
 
 async function openAuction() {
     var description = $('#description').val();
-    var starting_price = parseInt($('#starting_price').val());
+    //var starting_price = parseInt($('#starting_price').val());
+    var starting_price = $('#starting_price').val();
     var maximum_duration = parseInt($('#maximum_duration').val());
     var chassis_id = $('#chassis_id').val();
     var picture_id = $('#picture_id').val();
@@ -83,7 +84,7 @@ async function openAuction() {
     document.getElementById('new_auction').reset();
 
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
-        console.log(receipt); //MA QUESTO STAMPA EFFETTIVAMENTE QUALCOSA????????? SI, L'INFO SULLA TRANSAZIONE
+        console.log(receipt);
 
         document.getElementById('new_auction').outerHTML += "<br><h4>Oh well: Success!</h4>";
         document.getElementById('new_auction').reset();
@@ -106,6 +107,7 @@ async function openAuction() {
     }).catch((err)=>{
         console.error(err.message);
     });
+
 
 
     //elisa
@@ -170,6 +172,18 @@ document.getElementById("picture_id").addEventListener('change',(event)=>{
     });
 */
 
+async function printTax(){
+    //print fixed tax
+    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
+        console.log(tax);
+        document.getElementById('tax').outerHTML += tax+" Wei";
+        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').reset();
+    }).catch((err)=>{
+        console.error(err);
+    });
+}
+
 async function loadPictures(){
     var j=1;
     fetch('http://localhost:5000/auctions/', {
@@ -199,7 +213,18 @@ async function loadPictures(){
 
 //Plots all the auctions in a table
 async function getOpenAuctions(){
-    console.log("contract: "+contract);
+    //console.log("contract: "+contract); pretty useless, it's just an object
+    
+    //print fixed tax
+    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
+        console.log(tax);
+        document.getElementById('tax').outerHTML += tax+" Wei";
+        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').reset();
+    }).catch((err)=>{
+        console.error(err);
+    });
+
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
         for(let i = 0; i < auctions.length; i++){
             auction = auctions[i];
@@ -228,10 +253,15 @@ async function getOpenAuctions(){
                         </form>'
 
             var tr = "<tr>";
-            tr += "<td>"+auction.owner+"</td>";
-            tr += "<td>"+auction.current_winner+"</td>";
-            tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
-            tr += "<td>"+auction.offer+"</td>";
+            //tr += "<td>"+auction.owner+"</td>";
+            if(auction.current_winner == 0){
+                tr += "<td>"+"none so far"+"</td>";
+            }else{
+                tr += "<td>"+auction.current_winner+"</td>";
+            }
+            tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+            tr += "<td>"+(auction.starting_price)+" Wei</td>";
+            tr += "<td>"+(auction.offer)+" Wei</td>";
             tr += "<td>"+"pippoplutopaperino"+"</td>";
             tr += "<td>"+button_participate+"</td>";
             tr += "<td>"+button_car+"</td>";
@@ -299,12 +329,13 @@ async function getOpenAuction(){
                       </form>'
 
         var tr = "<tr>";
-        tr += "<td>"+auction.owner+"</td>";
+        //tr += "<td>"+auction.owner+"</td>";
         tr += "<td>"+auction.current_winner+"</td>";
-        tr += "<td>"+web3.utils.toAscii(auction.car.chassis_id)+"</td>";
+        //tr += "<td>"+web3.utils.toAscii(auction.car.chassis_id)+"</td>";
         //tr += "<td>"+auction.description+"</td>";
         tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
         //tr += "<td>"+auction.picture_id+"</td>";
+        tr += "<td>"+auction.starting_price+"</td>";
         tr += "<td>"+auction.offer+"</td>";
         tr += "<td>"+button_participate+"</td>";
         tr += "<td>"+button_car+"</td>";
@@ -335,7 +366,7 @@ async function getOpenAuction(){
                         <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
                         <input type="submit" value="Car history"/> \
                       </form>'
-
+        //per ora non lo esegue mai poi vedere se i campi sono corretti (quando mai funzionerà il db)
         var tr = "<tr>";
         tr += "<td>"+auction.owner_addr+"</td>";
         tr += "<td>"+auction.winner_addr+"</td>";
@@ -343,7 +374,7 @@ async function getOpenAuction(){
         tr += "<td>"+auction.description+"</td>";
         tr += "<td>"+auction.maximum_duration+"</td>";
         tr += "<td>"+auction.picture_id+"</td>";
-        tr += "<td>"+auction.starting_price+"</td>";
+        tr += "<td>"+auction.offer+"</td>";
         tr += "<td>"+button_participate+"</td>";
         tr += "<td>"+button_car+"</td>";
         tr += "</tr>";
@@ -359,6 +390,16 @@ async function getOpenAuction(){
 async function getCar(){
     var url = new URLSearchParams(window.location.search);
     chassis_id = url.get("chassis_id");
+
+    //print fixed tax
+    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
+        console.log(tax);
+        document.getElementById('tax').outerHTML += tax+" Wei";
+        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').reset();
+    }).catch((err)=>{
+        console.error(err);
+    });
 
     fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
         method: 'GET',
@@ -384,13 +425,20 @@ async function getCar(){
 async function participateAuction(){
     var url = new URLSearchParams(window.location.search);
     owner_addr = url.get("owner_addr");
-    var offer = $('#offer').val();
+    var offer = $('#offer').val(); //Wei
 
-    /*contract.methods.getContractBalance().send({from:senderAddress}).then(function(receipt){
-        console.log("CONTRACT BALANCE BEFORE: "+receipt);
-    });*/
+    //print fixed tax
+    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
+        console.log(tax);
+        document.getElementById('tax').outerHTML += tax+" Wei";
+        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').reset();
+    }).catch((err)=>{
+        console.error(err);
+    });
     
-    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
+    //contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
+    contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, offer}).then(function(receipt) {
         console.log(receipt);
         
         /* DA TOGLIERE
@@ -411,13 +459,21 @@ async function participateAuction(){
     }).catch((err)=>{
         console.error(err.message);
     });
-    /*contract.methods.getContractBalance().send({from:senderAddress}).then(function(receipt){
-        console.log("CONTRACT BALANCE AFTER: "+receipt);
-    });*/
+
 }
 
 async function closeAuction(){
     var url = new URLSearchParams(window.location.search);
+    //print fixed tax
+    contract.methods.getTax().call({from:senderAddress}).then(function(tax){
+        console.log(tax);
+        document.getElementById('tax').outerHTML += tax+" Wei";
+        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+        document.getElementById('tax').reset();
+    }).catch((err)=>{
+        console.error(err);
+    });
+
     owner_addr = url.get("owner_addr");
     document.getElementById('close_auction').outerHTML += "<br><h4>Wait...Do you really want to close the auction?</h4>";
     contract.methods.closeAuction(owner_addr).send({from:senderAddress}).then(function(receipt) {
