@@ -32,11 +32,14 @@ contract StoCar{
 
     mapping(bytes32=>CarNFT) internal tokens_closed; //list of all the NFTs in closed auctions
 
+    mapping(address=>CarNFT[]) public token_balance; //each account with the relative tokens
+
     //Events declaration
     event TaxChanged(uint64 new_tax);
     event AuctionOpened(address owner);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
+    //event TokenBalanceUpdated(address winner, uint token_num);
     event Debug(uint value1,uint value2, uint value3);
 
     constructor(uint64 starting_tax) {
@@ -181,6 +184,13 @@ contract StoCar{
             open_auctions[owner_addr].offer -= tax;
             //balance += tax;
             /////////////////////////SEND TOKEN HERE IN SOME WAY: MAYBE MAPPING AND HERE ADD TOKEN FOR THE WINNER ADDR
+            if(token_balance[owner_addr].length == 0){
+                token_balance[owner_addr].push(open_auctions[owner_addr].car);
+            }
+            else{
+                token_balance[owner_addr].push(open_auctions[owner_addr].car);
+            }
+            //emit TokenBalanceUpdated(owner_addr, token_balance[owner_addr].length);
         }
         payable(open_auctions[owner_addr].owner).transfer(open_auctions[owner_addr].offer); //updated value is transferred to the auction's owner
         

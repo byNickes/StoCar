@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xFfD04b2Dc5af2D93948E386A9f4C6d954376ea5e";
+var contractAddress = "0x4078b860462e00A7CAaAddd632E0012695AcD213";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
