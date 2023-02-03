@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xE4a10865A0e2ce0aE52342b03131D7773CD56588";
+var contractAddress = "0x1F00dD7d70265d2e2900d2ff4dF3CED047796407";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -80,11 +80,14 @@ async function openAuction() {
     //var file = fileInput.files[0];
 
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
-        console.log(receipt); //MA QUESTO STAMPA EFFETTIVAMENTE QUALCOSA?????????
+        console.log(receipt); //MA QUESTO STAMPA EFFETTIVAMENTE QUALCOSA????????? SI, L'INFO SULLA TRANSAZIONE
 
         document.getElementById('new_auction').reset();
         document.getElementById('new_auction').outerHTML += "<br><h4>Success!</h4>";
+        //document.getElementById('success').innerText += "<br><h4>Success!</h4>";
         document.getElementById('new_auction').reset();
+
+
 
         fetch('http://localhost:5000/auctions/', {
             method: 'POST',
@@ -152,6 +155,7 @@ async function openAuction() {
     });*/
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
+    //document.getElementById('new_auction').innerHTML += "<br><h4>Waiting...</h4><h4>Metamask not working as exprected? You sure you can do this operation?</h4>";
     document.getElementById('new_auction').reset();
 
 }
