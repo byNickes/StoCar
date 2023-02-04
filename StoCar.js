@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xa751EFd10F567D35Cd7322Fc795f4Fb2F2136303";
+var contractAddress = "0x7dfa1e91087cA76072238Bb4B2C0F3869F39FD9d";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -70,7 +70,6 @@ async function initialise(contractAddress) {
 
 async function openAuction() {
     var description = $('#description').val();
-    //var starting_price = parseInt($('#starting_price').val());
     var starting_price = $('#starting_price').val();
     var maximum_duration = parseInt($('#maximum_duration').val());
     var chassis_id = $('#chassis_id').val();
@@ -79,24 +78,18 @@ async function openAuction() {
     //picture handling
     var fileInput = document.getElementById('picture_id');
     var file = fileInput.files[0];
-    //localStorage.setItem(picture_id, "giorgio");
-    console.log("FILE1: "+picture_id);
-    console.log("FILE2: "+fileInput);
-    console.log("FILE3: "+file);
+    var reader = new FileReader();
+    reader.onload = function() {
+        localStorage.setItem(picture_id, reader.result);
+    }
+    reader.readAsDataURL(file); 
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not computing gas? Maybe it's an Operation Not Permitted...</h4>";
-    //document.getElementById('new_auction').reset();
 
-    console.log("FIRST OPTION "+ web3.utils.asciiToHex(chassis_id));
-    console.log("SECOND OPTION "+ web3.utils.asciiToHex(chassis_id).replace("\"",""));
-    //console.log("THIRD OPTION "+ (web3.utils.asciiToHex(chassis_id)).prototype.padStart(32,"0"));
-
-    //contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id).replace("\"","")).send({from:senderAddress}).then(function(receipt) {
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt);
 
         document.getElementById('new_auction').outerHTML += "<br><h4>Oh well: Success!</h4>";
-        //document.getElementById('new_auction').reset();
 
         fetch('http://localhost:5000/auctions/', {
             method: 'POST',
@@ -148,17 +141,6 @@ async function openAuction() {
 
 }
 
-/*???????
-document.getElementById("picture_id").addEventListener('change',(event)=>{
-        const image=event.target.files[0];
-        const reader=new FileReader();
-        reader.readAsDataURL(image);
-        reader.addEventListener('load', ()=>{
-            localStorage.setItem('image',reader.result);
-        })
-    });
-*/
-
 async function printTax(){
     //print fixed tax
     contract.methods.getTax().call({from:senderAddress}).then(function(tax){
@@ -204,6 +186,8 @@ async function loadPictures(){
 async function getOpenAuctions(){
     //console.log("contract: "+contract); pretty useless, it's just an object
     
+    /////////////////////OK MA NON LE STAMPA IN ORDINE
+    let trs = [];
     //get open auctions and relative information from db
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
         //print everything on screen
@@ -251,20 +235,22 @@ async function getOpenAuctions(){
             document.getElementById('list_auctions').innerHTML += tr;*/
 
 
-
+            trs[i] = "<tr>";
+            //tr += "<td>"+auction.owner+"</td>";
+            if(auction.current_winner == 0){
+                trs[i] += "<td>"+"none so far"+"</td>";
+            }else{
+                trs[i] += "<td>"+auction.current_winner+"</td>";
+            }
+            trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+            trs[i] += "<td>"+(auction.starting_price)+" Wei</td>";
+            trs[i] += "<td>"+(auction.offer)+" Wei</td>";
+            
             console.log("TYPE IS "+typeof auction.car.chassis_id);
             console.log("hex chassis before "+auction.car.chassis_id);
-            let url = auction.owner+'&chassis_id_hex='+auction.car.chassis_id;
-            url = url.toString();
-            console.log("the url is "+url)
-            let url2 = auction.owner+'&'+auction.car.chassis_id;
-            console.log("the url2 is "+url2)
+            
             //find in db
-            //substitute web3.utils.hexToAscii((auction.car.chassis_id).replace(/[^\x00-\x7F]/g, ""))
-            //fetch('http://localhost:5000/auction?owner_addr='+auction.owner, {
-            //fetch('http://localhost:5000/auction?owneraddr='+url, {
-            //fetch('http://localhost:5000/auction?chassis_id_hex='+auction.car.chassis_id, {
-            fetch('http://localhost:5000/auction/'+url2, {
+            fetch('http://localhost:5000/auction/'+auction.owner+'&'+auction.car.chassis_id, {
                         method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -279,17 +265,11 @@ async function getOpenAuctions(){
                     auction_db = auctions[0];
                     console.log("Picture is "+auction_db.picture_id);
 
-                    //try to print images
-                    //var fileDisplayArea = document.getElementById('for_img');
-                    //fileDisplayArea.innerHTML = "";
-                    // Create a new image.
+                    //print images
                     var img = new Image();
-                    // Set the img src property using the data URL.
                     var result = localStorage.getItem(auction_db.picture_id);
                     //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                     img.src = result;
-                    // Add the image to the page.
-                    //fileDisplayArea.appendChild(img);
 
                     //console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
                     if(auction_db.owner_addr != senderAddress){
@@ -310,7 +290,7 @@ async function getOpenAuctions(){
                                     <input type="submit" value="Car history"/> \
                                 </form>'
         
-                    var tr = "<tr>";
+                    /*var tr = "<tr>";
                     //tr += "<td>"+auction.owner+"</td>";
                     if(auction.current_winner == 0){
                         tr += "<td>"+"none so far"+"</td>";
@@ -319,13 +299,14 @@ async function getOpenAuctions(){
                     }
                     tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
                     tr += "<td>"+(auction.starting_price)+" Wei</td>";
-                    tr += "<td>"+(auction.offer)+" Wei</td>";
-                    tr += "<td>"+(auction_db.description)+"</td>";
-                    tr += "<td>"+button_participate+"</td>";
-                    tr += "<td>"+button_car+"</td>";
-                    tr += "</tr>";
+                    tr += "<td>"+(auction.offer)+" Wei</td>";*/
+                    console.log("UNTIL NOW IS "+trs[i]);
+                    trs[i] += "<td>"+(auction_db.description)+"</td>";
+                    trs[i] += "<td>"+button_participate+"</td>";
+                    trs[i] += "<td>"+button_car+"</td>";
+                    trs[i] += "</tr>";
 
-                    document.getElementById('list_auctions').innerHTML += tr;
+                    document.getElementById('list_auctions').innerHTML += trs[i];
                     document.getElementById('list_auctions').appendChild(img);
                 }
             });
@@ -396,7 +377,7 @@ async function getOpenAuction(){
         var tr = "<tr>";
         tr += "<td>"+auction.owner_addr+"</td>";
         tr += "<td>"+auction.winner_addr+"</td>";
-        tr += "<td>"+web3.utils.hexToAscii(auction.chassis_id)+"</td>";
+        tr += "<td>"+auction.chassis_id+"</td>";
         tr += "<td>"+auction.description+"</td>";
         tr += "<td>"+auction.maximum_duration+"</td>";
         tr += "<td>"+auction.picture_id+"</td>";
@@ -417,7 +398,7 @@ async function getCar(){
     var url = new URLSearchParams(window.location.search);
     chassis_id = url.get("chassis_id");
 
-    fetch('http://localhost:5000/car_history?chassis_id='+web3.utils.hexToAscii(chassis_id), {
+    fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
