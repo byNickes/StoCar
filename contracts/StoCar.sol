@@ -36,7 +36,7 @@ contract StoCar{
 
     //Events declaration
     event TaxChanged(uint64 new_tax);
-    event AuctionOpened(address owner);
+    event AuctionOpened(address owner, bytes32 chassis_id);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
     //event TokenBalanceUpdated(address winner, uint token_num);
@@ -71,11 +71,11 @@ contract StoCar{
         if(tokens_closed[chassis_id].chassis_id == bytes4(0)){
             car = CarNFT({
                 chassis_id: chassis_id
-            });
-            tokens_open[chassis_id] = car; //create new token
+            }); //create new token
         }else{
             car = tokens_closed[chassis_id]; //use the one already existing
         }
+        tokens_open[chassis_id] = car; //add token reference to auction
         
         open_auctions[msg.sender] = Auction({
             owner: msg.sender,
@@ -98,7 +98,7 @@ contract StoCar{
             sellers.push(msg.sender);
         }
 
-        emit AuctionOpened(msg.sender);
+        emit AuctionOpened(msg.sender,chassis_id);
     }
 
     
@@ -144,18 +144,10 @@ contract StoCar{
         return ret;
     }
 
-    //function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
-    function participateAuction(address owner_addr, uint256 new_offer) payable public {
+    function participateAuction(address owner_addr, uint256 new_offer) payable public CheckExpiry(owner_addr){
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists
         require((new_offer-tax)>open_auctions[owner_addr].starting_price, "The new offer has to be greater than the starting price.");
         require((new_offer-tax)>open_auctions[owner_addr].offer, "The new offer has to be greater than the current offer.");
-
-        //check if auction is to be closed NOT TESTED IF IT WORKS
-        if(block.timestamp > open_auctions[owner_addr].duration){ 
-            //The auction time is expired
-            closeAuction(owner_addr);
-            return;
-        }
         
         //when the new offer is accepted, the past offer is to be returned to the account who sent it
         //balance += tax;

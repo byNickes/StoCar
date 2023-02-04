@@ -28,12 +28,18 @@ app.get("/auctions", async(req,res) => {
         console.error(err.message);
     }
 });
+
 //GET AN AUCTION
-app.get("/auctions", async(req,res)=>{
+app.get("/auction", async(req,res)=>{
     try{
+        console.error("FIELDS "+req.query);
         const owner_addr = req.query.owner_addr;
+        //const owner_addr = req.fields[0];
+        //const chassis_id = req.fields[1];
+        //console.log("addr "+owner_addr+" and id "+chassis_id);
         
         const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1", [owner_addr]);
+        //const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1 & chassis_id = $2", [owner_addr, chassis_id]);
         res.json(getAuction.rows);
     }
     catch(err){
