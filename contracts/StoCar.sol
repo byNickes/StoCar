@@ -5,7 +5,7 @@ contract StoCar{
     address payable private creator;
     
     struct CarNFT{
-        bytes32 chassis_id; //hash of the chassis number computed with keccak256
+        bytes12 chassis_id; //hash of the chassis number computed with keccak256
     }
 
     struct Auction{
@@ -28,15 +28,15 @@ contract StoCar{
                                                     //is the owner's address
     mapping(address=>Auction) internal closed_auctions; //list of all the closed auctions
 
-    mapping(bytes32=>CarNFT) internal tokens_open; //list of all the NFTs in currently opened auctions
+    mapping(bytes12=>CarNFT) internal tokens_open; //list of all the NFTs in currently opened auctions
 
-    mapping(bytes32=>CarNFT) internal tokens_closed; //list of all the NFTs in closed auctions
+    mapping(bytes12=>CarNFT) internal tokens_closed; //list of all the NFTs in closed auctions
 
     mapping(address=>CarNFT[]) public token_balance; //each account with the relative tokens
 
     //Events declaration
     event TaxChanged(uint64 new_tax);
-    event AuctionOpened(address owner, bytes32 chassis_id);
+    event AuctionOpened(address owner, bytes12 chassis_id);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
     //event TokenBalanceUpdated(address winner, uint token_num);
@@ -57,7 +57,7 @@ contract StoCar{
         _;
     }
 
-    function openAuction(uint256 starting_price, uint16 max_duration, bytes32 chassis_id) payable public{
+    function openAuction(uint256 starting_price, uint16 max_duration, bytes12 chassis_id) payable public{
         require(max_duration > 0, "The duration has to be greater than 0.");
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
         require(starting_price >= tax, "The starting price of an auction has to be greater or equal than the fixed tax.");
@@ -196,7 +196,7 @@ contract StoCar{
     }
 
 
-    function getCarHistory(bytes32 chassis_id) view public returns (Auction[] memory){
+    function getCarHistory(bytes12 chassis_id) view public returns (Auction[] memory){
         //complete
     }
 

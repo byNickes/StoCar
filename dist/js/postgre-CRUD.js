@@ -30,16 +30,12 @@ app.get("/auctions", async(req,res) => {
 });
 
 //GET AN AUCTION
-app.get("/auction", async(req,res)=>{
+app.get("/auction/:owner_addr&:chassis_id_hex", async(req,res)=>{
     try{
-        console.error("FIELDS "+req.query);
-        const owner_addr = req.query.owner_addr;
-        //const owner_addr = req.fields[0];
-        //const chassis_id = req.fields[1];
-        //console.log("addr "+owner_addr+" and id "+chassis_id);
-        
-        const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1", [owner_addr]);
-        //const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1 & chassis_id = $2", [owner_addr, chassis_id]);
+        const owner_addr = req.params.owner_addr;
+        const chassis_id_hex = req.params.chassis_id_hex;
+
+        const getAuction = await pool.query("SELECT * FROM auctions WHERE owner_addr = $1 and chassis_id_hex = $2", [owner_addr, chassis_id_hex]);
         res.json(getAuction.rows);
     }
     catch(err){
@@ -51,13 +47,13 @@ app.get("/auction", async(req,res)=>{
 //CREATE AN AUCTION
 app.post("/auctions", async(req,res) => {
     try{
-        const {owner_addr, chassis_id, picture_id, description} = req.body;
+        const {owner_addr, chassis_id_hex, chassis_id, picture_id, description} = req.body;
         var car = await pool.query("SELECT chassis_id FROM cars WHERE chassis_id = $1", [chassis_id]);
         if(car.rowCount == 0){
             await pool.query("INSERT INTO cars (chassis_id) VALUES ($1)", [chassis_id]);
         }
 
-        await pool.query("INSERT INTO auctions (owner_addr, chassis_id, picture_id, description) VALUES ($1, $2, $3, $4)", [owner_addr, chassis_id, picture_id, description]);
+        await pool.query("INSERT INTO auctions (owner_addr, chassis_id_hex, chassis_id, picture_id, description) VALUES ($1, $2, $3, $4, $5)", [owner_addr, chassis_id_hex, chassis_id, picture_id, description]);
     }
     catch (err){
         console.error(err.message);
