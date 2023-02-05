@@ -75,9 +75,9 @@ app.post("/send_offer", async(req,res)=>{
 //DELETE AN AUCTION (TODO)
 
 //GET A CAR
-app.get("/car_history", async(req,res)=>{
+app.get("/car_history/:chassis_id", async(req,res)=>{
     try{
-        const chassis_id = req.query.chassis_id;
+        const chassis_id = req.params.chassis_id;
 
         const getCar = await pool.query("SELECT * FROM auctions WHERE chassis_id = $1", [chassis_id]);
         res.json(getCar.rows);

@@ -61,14 +61,14 @@ contract StoCar{
         require(max_duration > 0, "The duration has to be greater than 0.");
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
         require(starting_price >= tax, "The starting price of an auction has to be greater or equal than the fixed tax.");
-        require(tokens_open[chassis_id].chassis_id == bytes4(0), "You cannot sell a car that someone else is already selling!!");
+        require(tokens_open[chassis_id].chassis_id == bytes12(0), "You cannot sell a car that someone else is already selling!!");
 
         //change duration from hours to seconds
         uint in_secs = max_duration*3600;
 
         //check if the token already exists, if not create a new one
         CarNFT memory car = CarNFT({chassis_id: 0});
-        if(tokens_closed[chassis_id].chassis_id == bytes4(0)){
+        if(tokens_closed[chassis_id].chassis_id == bytes12(0)){
             car = CarNFT({
                 chassis_id: chassis_id
             }); //create new token

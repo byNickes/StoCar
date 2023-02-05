@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x60D791B38F1a39591c07D9931e651C573b1722cf";
+var contractAddress = "0xc455d37751c9659e247c577f1d6F7a28C78E7652";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -240,7 +240,11 @@ async function getOpenAuctions(){
             }else{
                 trs[i] += "<td>"+auction.current_winner+"</td>";
             }
-            trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+            //print time
+            let dateObj = new Date(auction.duration * 1000);
+            let utcString = dateObj.toUTCString();
+            trs[i] += "<td>"+utcString+"</td>";
+            //trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
             trs[i] += "<td>"+(auction.starting_price)+" Wei</td>";
             trs[i] += "<td>"+(auction.offer)+" Wei</td>";
             
@@ -372,7 +376,7 @@ async function getOpenAuction(){
                 }
                 
                 button_car = '<form action="/car_history.html" method="get"> \
-                                <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                                <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction_db.chassis_id+'"/> \
                                 <input type="submit" value="Car history"/> \
                             </form>'
     
@@ -384,7 +388,11 @@ async function getOpenAuction(){
                 }else{
                     tr += "<td>"+auction.current_winner+"</td>";
                 }
-                tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+                //print time
+                let dateObj = new Date(auction.duration * 1000);
+                let utcString = dateObj.toUTCString();
+                tr += "<td>"+utcString+"</td>";
+                //tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
                 tr += "<td>"+(auction.starting_price)+" Wei</td>";
                 tr += "<td>"+(auction.offer)+" Wei</td>";
                 tr += "<td>"+(auction_db.description)+"</td>";
@@ -405,6 +413,7 @@ async function getOpenAuction(){
 async function getCar(){
     var url = new URLSearchParams(window.location.search);
     chassis_id = url.get("chassis_id");
+    console.log("IN FOR CHASSIS ID = "+chassis_id);
 
     fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
         method: 'GET',
@@ -414,13 +423,18 @@ async function getCar(){
         }
     }).then((response) => {
         return response.json()
-    }).then((cars) => {
-        car = cars[0];
-        console.log(car);
+    }).then((auctions) => {
+        console.log("CARS ARE "+auctions.length);
+        auction = auctions[0];
+        console.log(auction);
 
         var tr = "<tr>";
-        tr += "<td>"+car.owner_addr+"</td>";
-        tr += "<td>"+car.winner_addr+"</td>";
+        tr += "<td>"+auction.owner_addr+"</td>";
+        //tr += "<td>"+auction.winner_addr+"</td>"; //WINNER ADDR NON LO ABBIAMO NEL DB, 
+        //STA SULLA BLOCKCHAIN, PERò IN REALTà LA BLOCKCHAIN CONTROLLA CHE TUTTO SIA APPOSTO 
+        //CON PREVIOUS OWNER E NEW OWNER QUINDI NON SERVE STAMPARLI QUI ENTRAMBI
+        tr += "<td>"+auction.car.chassis_id+"</td>";
+        tr += "<td>"+auction.offer+"</td>";
         tr += "</tr>";
 
         document.getElementById('car').innerHTML += tr;
