@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x7dfa1e91087cA76072238Bb4B2C0F3869F39FD9d";
+var contractAddress = "0x60D791B38F1a39591c07D9931e651C573b1722cf";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -234,9 +234,7 @@ async function getOpenAuctions(){
             
             document.getElementById('list_auctions').innerHTML += tr;*/
 
-
             trs[i] = "<tr>";
-            //tr += "<td>"+auction.owner+"</td>";
             if(auction.current_winner == 0){
                 trs[i] += "<td>"+"none so far"+"</td>";
             }else{
@@ -270,23 +268,24 @@ async function getOpenAuctions(){
                     var result = localStorage.getItem(auction_db.picture_id);
                     //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                     img.src = result;
+                    document.getElementById('list_auctions').appendChild(img);
 
                     //console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
                     if(auction_db.owner_addr != senderAddress){
                         button_participate = '<form action="/auction.html" method="get"> \
-                                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction_db.owner_addr+'"/> \
                                                 <input type="submit" value="See auction"/> \
                                             </form>'
                     }else {//change it into close auction button
                         button_participate = '<form action="/close_auction.html" method="get"> \
-                                            <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                            <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction_db.owner_addr+'"/> \
                                             <input type="submit" value="Close auction"/> \
                                         </form>'
                     }
                     
         
                     button_car = '<form action="/car_history.html" method="get"> \
-                                    <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                                    <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction_db.chassis_id+'"/> \
                                     <input type="submit" value="Car history"/> \
                                 </form>'
         
@@ -300,14 +299,28 @@ async function getOpenAuctions(){
                     tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
                     tr += "<td>"+(auction.starting_price)+" Wei</td>";
                     tr += "<td>"+(auction.offer)+" Wei</td>";*/
+
+                    //trs[i] = "<tr>";
+                    trs[i] += "<td>"+auction_db.chassis_id+"</td>";
+                    //tr += "<td>"+auction.owner+"</td>";
+                    /*console.log("CURRENT WINNER IS "+auction.current_winner);
+                    if(auction.current_winner == 0){
+                        trs[i] += "<td>"+"none so far"+"</td>";
+                    }else{
+                        trs[i] += "<td>"+auction.current_winner+"</td>";
+                    }
+                    trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+                    trs[i] += "<td>"+(auction.starting_price)+" Wei</td>";
+                    trs[i] += "<td>"+(auction.offer)+" Wei</td>";*/
                     console.log("UNTIL NOW IS "+trs[i]);
+
                     trs[i] += "<td>"+(auction_db.description)+"</td>";
                     trs[i] += "<td>"+button_participate+"</td>";
                     trs[i] += "<td>"+button_car+"</td>";
                     trs[i] += "</tr>";
 
                     document.getElementById('list_auctions').innerHTML += trs[i];
-                    document.getElementById('list_auctions').appendChild(img);
+                    //document.getElementById('list_auctions').appendChild(img);
                 }
             });
         }
@@ -323,73 +336,68 @@ async function getOpenAuction(){
     owner_addr = url.get("owner_addr");
 
     contract.methods.getOpenAuction(owner_addr).call({from:senderAddress}).then(function(auction) {
-        //console.log(web3.utils.toAscii(auction.car.chassis_id));
 
-        button_participate = '<form action="/participate_auction.html" method="get"> \
-                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                <input type="submit" value="Participate auction"/> \
-                              </form>'
+        fetch('http://localhost:5000/auction/'+auction.owner+'&'+auction.car.chassis_id, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            console.log("RESPONSE IS "+response);
+            return response.json()
+        }).then((auctions) => {
+            console.log("AUCTIONS ARE "+auctions.length);
+            if(auctions.length > 0){
+                auction_db = auctions[0];
+                console.log("Picture is "+auction_db.picture_id);
 
-        button_car = '<form action="/car_history.html" method="get"> \
-                        <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.car.chassis_id+'"/> \
-                        <input type="submit" value="Car history"/> \
-                      </form>'
+                //print images
+                var img = new Image();
+                var result = localStorage.getItem(auction_db.picture_id);
+                //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
+                img.src = result;
 
-        var tr = "<tr>";
-        //tr += "<td>"+auction.owner+"</td>";
-        tr += "<td>"+auction.current_winner+"</td>";
-        //tr += "<td>"+web3.utils.toAscii(auction.car.chassis_id)+"</td>";
-        //tr += "<td>"+auction.description+"</td>";
-        tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"</td>";
-        //tr += "<td>"+auction.picture_id+"</td>";
-        tr += "<td>"+auction.starting_price+"</td>";
-        tr += "<td>"+auction.offer+"</td>";
-        tr += "<td>"+button_participate+"</td>";
-        tr += "<td>"+button_car+"</td>";
-        tr += "</tr>";
-
-        document.getElementById('auction').innerHTML += tr;
-    });
+                console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
+                if(auction_db.owner_addr != senderAddress){
+                    button_participate = '<form action="/participate_auction.html" method="get"> \
+                                            <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                            <input type="submit" value="Make an offer"/> \
+                                        </form>'
+                }else {//change it into close auction button
+                    button_participate = '<form action="/close_auction.html" method="get"> \
+                                        <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
+                                        <input type="submit" value="Close auction"/> \
+                                    </form>'
+                }
+                
+                button_car = '<form action="/car_history.html" method="get"> \
+                                <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
+                                <input type="submit" value="Car history"/> \
+                            </form>'
     
-    fetch('http://localhost:5000/auctions?owner_addr='+owner_addr, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        return response.json()
-    }).then((auctions) => {
-        auction = auctions[0];
-        console.log(auction);
+                var tr = "<tr>";
+                tr += "<td>"+auction_db.chassis_id+"</td>";
+                //tr += "<td>"+auction.owner+"</td>";
+                if(auction.current_winner == 0){
+                    tr += "<td>"+"none so far"+"</td>";
+                }else{
+                    tr += "<td>"+auction.current_winner+"</td>";
+                }
+                tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
+                tr += "<td>"+(auction.starting_price)+" Wei</td>";
+                tr += "<td>"+(auction.offer)+" Wei</td>";
+                tr += "<td>"+(auction_db.description)+"</td>";
+                tr += "<td>"+button_participate+"</td>";
+                tr += "<td>"+button_car+"</td>";
+                tr += "</tr>";
 
-        
-        button_participate = '<form action="/participate_auction.html" method="get"> \
-                                <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner_addr+'"/> \
-                                <input type="submit" value="Participate auction"/> \
-                              </form>'
+                document.getElementById('auction').innerHTML += tr;
+                document.getElementById('auction').appendChild(img);
+            }
+        });
 
-        button_car = '<form action="/car_history.html" method="get"> \
-                        <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
-                        <input type="submit" value="Car history"/> \
-                      </form>'
-        //per ora non lo esegue mai poi vedere se i campi sono corretti (quando mai funzionerà il db)
-        var tr = "<tr>";
-        tr += "<td>"+auction.owner_addr+"</td>";
-        tr += "<td>"+auction.winner_addr+"</td>";
-        tr += "<td>"+auction.chassis_id+"</td>";
-        tr += "<td>"+auction.description+"</td>";
-        tr += "<td>"+auction.maximum_duration+"</td>";
-        tr += "<td>"+auction.picture_id+"</td>";
-        tr += "<td>"+auction.offer+"</td>";
-        tr += "<td>"+button_participate+"</td>";
-        tr += "<td>"+button_car+"</td>";
-        tr += "</tr>";
-
-        document.getElementById('auction').innerHTML += tr;
     });
-
-    console.log("OWNER_ADDR: "+owner_addr);
     
 }
 
