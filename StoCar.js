@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xc455d37751c9659e247c577f1d6F7a28C78E7652";
+var contractAddress = "0xC79bbD18896408aD21bf6Bd35eF84a427A9d7201";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -86,6 +86,7 @@ async function openAuction() {
 
     document.getElementById('new_auction').outerHTML += "<br><h4>Waiting...</h4><h4>Metamask not computing gas? Maybe it's an Operation Not Permitted...</h4>";
 
+    console.log("out");
     contract.methods.openAuction(starting_price, maximum_duration, web3.utils.asciiToHex(chassis_id)).send({from:senderAddress}).then(function(receipt) {
         console.log(receipt);
 
@@ -108,6 +109,7 @@ async function openAuction() {
         });
         
     }).catch((err)=>{
+        console.log(err);
         console.error(err.message);
     });
 

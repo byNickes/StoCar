@@ -39,8 +39,8 @@ contract StoCar{
     event AuctionOpened(address owner, bytes12 chassis_id);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
-    //event TokenBalanceUpdated(address winner, uint token_num);
-    event Debug(uint value1,uint value2, uint value3);
+    event TokenBalanceAccessed(address owner, uint token_num);
+    event Debug(uint value1, uint value2, uint value3);
 
     constructor(uint64 starting_tax) {
         creator = payable(msg.sender);
@@ -63,20 +63,41 @@ contract StoCar{
         require(starting_price >= tax, "The starting price of an auction has to be greater or equal than the fixed tax.");
         require(tokens_open[chassis_id].chassis_id == bytes12(0), "You cannot sell a car that someone else is already selling!!");
 
-        //change duration from hours to seconds
-        uint in_secs = max_duration*3600;
-
         //check if the token already exists, if not create a new one
-        CarNFT memory car = CarNFT({chassis_id: 0});
+        CarNFT memory car;// = CarNFT({chassis_id: 0});
         if(tokens_closed[chassis_id].chassis_id == bytes12(0)){
             car = CarNFT({
                 chassis_id: chassis_id
             }); //create new token
-        }else{
-            car = tokens_closed[chassis_id]; //use the one already existing
         }
+        else{
+            uint presence = 0;
+            uint index = 0;
+            car = tokens_closed[chassis_id]; //use the one already existing
+
+            /*
+            OK IL PROBLEMA  IN QUESTO CONTROLLO, QUALCOSA NON FUNZIONA  
+            for(uint i = 0; i < token_balance[msg.sender].length; i++){
+                if(token_balance[msg.sender][i].chassis_id == car.chassis_id){ 
+                    //token is in the sender's possession
+                    presence = 1;
+                    index = i;
+                    break;
+                }
+            }
+            //if the sender is trying to sell an already existing token without having it in possession, revert
+            require(presence == 0, "You cannot sell something that you don't have!");*/
+
+            //at this point, remove token from the sender possession (so that at the end it can be added to the next owner balance)
+            emit TokenBalanceAccessed(msg.sender, token_balance[msg.sender].length);
+            token_balance[msg.sender][index] = CarNFT({chassis_id: 0}); 
+        }
+        emit TokenBalanceAccessed(msg.sender, token_balance[msg.sender].length); //DA TOGLIEREEEEE
         tokens_open[chassis_id] = car; //add token reference to auction
         
+        //change duration from hours to seconds
+        //uint in_secs = max_duration*3600;
+
         open_auctions[msg.sender] = Auction({
             owner: msg.sender,
             current_winner: address(0),
@@ -84,7 +105,7 @@ contract StoCar{
             car: car,
             starting_price: starting_price,
             start_timestamp: block.timestamp,
-            duration: block.timestamp+in_secs
+            duration: block.timestamp+(max_duration * 1 hours)
         });
 
         uint check = 0;
@@ -172,17 +193,25 @@ contract StoCar{
 
         //tax is paid for opening the auction (or better detracted from the value that is trasnferred to the owner of the auction)
         //but only if someone made an offer and the token exchange is finalized, otherwise no tax is detracted, and no token is sent 
-        if(open_auctions[owner_addr].offer != 0){
+        if(open_auctions[owner_addr].offer != 0){ //an offer was made, the highest one (which is the last one) wins
             open_auctions[owner_addr].offer -= tax;
             //balance += tax;
-            /////////////////////////SEND TOKEN HERE IN SOME WAY: MAYBE MAPPING AND HERE ADD TOKEN FOR THE WINNER ADDR
+
+            token_balance[open_auctions[owner_addr].current_winner].push(open_auctions[owner_addr].car); //token added to winner balance
+            emit TokenBalanceAccessed(open_auctions[owner_addr].current_winner, token_balance[open_auctions[owner_addr].current_winner].length);
+            /*DA TOGLIERE
             if(token_balance[owner_addr].length == 0){
                 token_balance[owner_addr].push(open_auctions[owner_addr].car);
             }
             else{
                 token_balance[owner_addr].push(open_auctions[owner_addr].car);
-            }
+            }*/
             //emit TokenBalanceUpdated(owner_addr, token_balance[owner_addr].length);
+        }
+        else{ //no offer was made
+            token_balance[owner_addr].push(open_auctions[owner_addr].car); //token added to previous owner balance
+            emit TokenBalanceAccessed(owner_addr, token_balance[owner_addr].length);
+
         }
         payable(open_auctions[owner_addr].owner).transfer(open_auctions[owner_addr].offer); //updated value is transferred to the auction's owner
         
