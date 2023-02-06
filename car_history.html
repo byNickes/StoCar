@@ -2,7 +2,7 @@
 <html lang="en">
 	<meta charset="utf-8">
 	<head>
-		<title>StoCar - Close the auction</title>
+		<title>StoCar - Get the car history</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.min.css" rel="stylesheet"> 
@@ -18,7 +18,7 @@
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
 
-    <body onload="assegnaEventHandler();">
+    <body onload="onLoad_history();">
         <div class="header">
             <div class="logo">
                 <a href="index.html">
@@ -46,10 +46,13 @@
                 </ul> 
             </div>-->
         </div>
-        <div class="sfondo3" onload="getCar(); return false;">
+        <div class="sfondo3">
+            <div><h4>Car History</h4></div>
+            <!--<input id = "history" type = "button" onclick = "getCar()" value = "Show Car History"></div>-->
             <div>
-                <table id="car">
+                <table id="car" border="1px">
                     <th>previous owner</th>
+                    <th>new owner</th>
                     <th>chassis_id</th>
                     <!--<th>description</th><br>-->
                     <!--<th>picture</th><br>-->

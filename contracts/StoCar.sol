@@ -18,9 +18,9 @@ contract StoCar{
         uint duration; //maximum duration of the auction in hours
     }
     
-    uint64 public tax; //applied transaction tax in WEI
+    uint64 private tax; //applied transaction tax in WEI
     
-    //uint256 public balance; //keep the balance of the contract PROBABLY NOT USEFUL TO REMOVE
+    uint256 private collected_taxes; //keep the amount of taxes collected by the contract (in WEI)
 
     address[] internal sellers; //list of all the sellers
 
@@ -39,13 +39,14 @@ contract StoCar{
     event AuctionOpened(address owner, bytes12 chassis_id);
     event OfferAccepted(address owner, address offerer, uint256 past_offer, uint256 new_offer);
     event AuctionClosed();
-    event TokenBalanceAccessed(address owner, uint token_num);
-    event Debug(uint value1, uint value2, uint value3);
+    event Withdrawn(uint256 taxes);
+    event TokenBalanceAccessed(address owner, uint token_num, bytes12 chassis_id, bytes12 zero);
+    event Debug(uint value); 
 
     constructor(uint64 starting_tax) {
         creator = payable(msg.sender);
         tax = starting_tax;
-        //balance = 0;
+        collected_taxes = 0;
     }   
 
     // It checks if an auction has expired
@@ -75,8 +76,7 @@ contract StoCar{
             uint index = 0;
             car = tokens_closed[chassis_id]; //use the one already existing
 
-            /*
-            OK IL PROBLEMA  IN QUESTO CONTROLLO, QUALCOSA NON FUNZIONA  
+            //OK IL PROBLEMA  IN QUESTO CONTROLLO, QUALCOSA NON FUNZIONA  
             for(uint i = 0; i < token_balance[msg.sender].length; i++){
                 if(token_balance[msg.sender][i].chassis_id == car.chassis_id){ 
                     //token is in the sender's possession
@@ -86,17 +86,15 @@ contract StoCar{
                 }
             }
             //if the sender is trying to sell an already existing token without having it in possession, revert
-            require(presence == 0, "You cannot sell something that you don't have!");*/
+            require(presence == 1, "You cannot sell something that you don't have!");
 
             //at this point, remove token from the sender possession (so that at the end it can be added to the next owner balance)
-            emit TokenBalanceAccessed(msg.sender, token_balance[msg.sender].length);
-            token_balance[msg.sender][index] = CarNFT({chassis_id: 0}); 
+            emit TokenBalanceAccessed(msg.sender, token_balance[msg.sender].length, token_balance[msg.sender][index].chassis_id,car.chassis_id);
+            token_balance[msg.sender][index] = CarNFT({chassis_id: 0});
+            delete tokens_closed[chassis_id];
         }
-        emit TokenBalanceAccessed(msg.sender, token_balance[msg.sender].length); //DA TOGLIEREEEEE
+
         tokens_open[chassis_id] = car; //add token reference to auction
-        
-        //change duration from hours to seconds
-        //uint in_secs = max_duration*3600;
 
         open_auctions[msg.sender] = Auction({
             owner: msg.sender,
@@ -171,7 +169,8 @@ contract StoCar{
         require((new_offer-tax)>open_auctions[owner_addr].offer, "The new offer has to be greater than the current offer.");
         
         //when the new offer is accepted, the past offer is to be returned to the account who sent it
-        //balance += tax;
+        collected_taxes = collected_taxes + tax;
+
         payable(open_auctions[owner_addr].current_winner).transfer(open_auctions[owner_addr].offer); //every exchange should be in Weis
         //emit Debug(open_auctions[owner_addr].offer, msg.value, new_offer);
         
@@ -195,10 +194,10 @@ contract StoCar{
         //but only if someone made an offer and the token exchange is finalized, otherwise no tax is detracted, and no token is sent 
         if(open_auctions[owner_addr].offer != 0){ //an offer was made, the highest one (which is the last one) wins
             open_auctions[owner_addr].offer -= tax;
-            //balance += tax;
+            collected_taxes = collected_taxes + tax;
 
             token_balance[open_auctions[owner_addr].current_winner].push(open_auctions[owner_addr].car); //token added to winner balance
-            emit TokenBalanceAccessed(open_auctions[owner_addr].current_winner, token_balance[open_auctions[owner_addr].current_winner].length);
+            emit TokenBalanceAccessed(open_auctions[owner_addr].current_winner, token_balance[open_auctions[owner_addr].current_winner].length,token_balance[open_auctions[owner_addr].current_winner][0].chassis_id, bytes12(0));
             /*DA TOGLIERE
             if(token_balance[owner_addr].length == 0){
                 token_balance[owner_addr].push(open_auctions[owner_addr].car);
@@ -210,7 +209,7 @@ contract StoCar{
         }
         else{ //no offer was made
             token_balance[owner_addr].push(open_auctions[owner_addr].car); //token added to previous owner balance
-            emit TokenBalanceAccessed(owner_addr, token_balance[owner_addr].length);
+            emit TokenBalanceAccessed(owner_addr, token_balance[owner_addr].length,token_balance[owner_addr][0].chassis_id, bytes12(0));
 
         }
         payable(open_auctions[owner_addr].owner).transfer(open_auctions[owner_addr].offer); //updated value is transferred to the auction's owner
@@ -225,14 +224,51 @@ contract StoCar{
     }
 
 
+    //RIMETTERE VIEW, TOLTO SOLO PER EVENTI
     function getCarHistory(bytes12 chassis_id) view public returns (Auction[] memory){
-        //complete
+        // find auctions of a specific chassis_id
+
+        uint[] memory open_presence = new uint[](sellers.length);
+        uint[] memory closed_presence = new uint[](sellers.length);
+        uint total = 0;
+
+        for(uint i = 0; i < sellers.length; i++){
+            if(open_auctions[sellers[i]].car.chassis_id == chassis_id){
+                open_presence[i] = 1;
+                total+=1;
+            }
+            else if(closed_auctions[sellers[i]].car.chassis_id == chassis_id){
+                closed_presence[i] = 1;
+                total+=1;
+            }
+        }
+
+        Auction[] memory ret = new Auction[](total);
+        //ret[0] = open_auctions[sellers[0]];
+        uint index = 0;
+        for(uint i = 0; i < sellers.length; i++){
+            if(open_presence[i] == 1){
+                ret[index] = open_auctions[sellers[i]];
+                index+=1;
+            } 
+            else if(closed_presence[i] == 1){
+                ret[index] = closed_auctions[sellers[i]];
+                index+=1;
+            }
+        }
+
+        return ret;
+
     }
 
 
     function getTax() public view returns(uint64 ret){
         //emit Debug(tax,tax,tax);
         return tax;
+    }
+    function getCreator() public view returns(address){
+        //emit Debug(tax,tax,tax);
+        return creator;
     }
     function changeFixedTax(uint64 new_tax) public{
         require(msg.sender == creator, "You are not the creator of the contract.");
@@ -241,14 +277,26 @@ contract StoCar{
         emit TaxChanged(new_tax);
     }
 
-    /*function withdraw() public{
-        require(msg.sender == creator, "You are not the creator of the contract.");
-        //payable(msg.sender).transfer(balance); TRANSFER SOMETHING HERE BUT DON'T KNOW WHAT STILL
-    }*/
+    function withdraw() payable public returns(uint256) {
 
-    /*function getContractBalance() public view returns(uint256){
-        return balance; PROBABLY NOT EVEN USEFUL
-    }*/
+        require(msg.sender == creator, "You are not the creator of the contract.");
+
+        payable(msg.sender).transfer(collected_taxes);
+        
+        //emit Debug(address(this).balance);
+
+        emit Withdrawn(collected_taxes);
+
+        uint256 old_taxes = collected_taxes;
+        collected_taxes = 0;
+        return old_taxes;
+
+    }
+
+    function terminate() public {
+        require(msg.sender == creator, "You cannot terminate the contract!");
+        selfdestruct(creator);
+    }
 
 
 }

@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xC79bbD18896408aD21bf6Bd35eF84a427A9d7201";
+var contractAddress = "0x3Dec848A7F40a1A7986c0791eC168f95Df8172d1";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -29,6 +29,11 @@ async function onLoad_available_auctions(){
 async function onLoad_auction(){
     await initialise(contractAddress);
     getOpenAuction(); 
+}
+
+async function onLoad_history(){
+    await initialise(contractAddress);
+    getCar(); 
 }
 
 async function initialise(contractAddress) {
@@ -92,20 +97,53 @@ async function openAuction() {
 
         document.getElementById('new_auction').outerHTML += "<br><h4>Oh well: Success!</h4>";
 
-        fetch('http://localhost:5000/auctions/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                "owner_addr": senderAddress,
-                "chassis_id_hex": web3.utils.asciiToHex(chassis_id),
-                "chassis_id": chassis_id,
-                "picture_id": picture_id,
-                //"picture_id": file,
-                "description": description
-            })
+        fetch('http://localhost:5000/auction/'+senderAddress+'&'+web3.utils.asciiToHex(chassis_id), {
+                        method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then((response) => {
+                //console.log("RESPONSE IS "+response);
+                return response.json()
+            }).then((auctions) => {
+                console.log("AUCTIONS ARE "+auctions.length);
+                if(auctions.length > 0){
+                    //update an auction
+                    fetch('http://localhost:5000/update_auction/', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            "owner_addr": senderAddress,
+                            "chassis_id_hex": web3.utils.asciiToHex(chassis_id),
+                            "chassis_id": chassis_id,
+                            "picture_id": picture_id,
+                            "description": description
+                        })
+                    });
+                    console.log("UPDATED");
+                }
+                else{
+                    //new auction
+                    fetch('http://localhost:5000/auction/', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            "owner_addr": senderAddress,
+                            "chassis_id_hex": web3.utils.asciiToHex(chassis_id),
+                            "chassis_id": chassis_id,
+                            "picture_id": picture_id,
+                            "description": description
+                        })
+                    });
+                    console.log("NEW CREATED");
+                }
         });
         
     }).catch((err)=>{
@@ -154,6 +192,56 @@ async function printTax(){
     }).catch((err)=>{
         console.error(err);
     });
+}
+
+async function changeTax(){
+    var new_tax = $('#new_tax').val();
+    
+    contract.methods.getCreator().call({from:senderAddress}).then(function(creator){
+        console.log("THE CREATOR IS "+creator);
+        if(creator == senderAddress){
+            //change fixed tax
+            contract.methods.changeFixedTax(new_tax).send({from:senderAddress}).then(function(receipt){
+                console.log("TAX CHANGED in "+new_tax);
+                document.getElementById('change_tax').innerHTML += "You changed the tax!";
+            }).catch((err)=>{
+                console.error(err);
+            });
+        }
+        else{
+            document.getElementById('change_tax').innerHTML += "You are not the creator! You cannot change the tax.";
+        }
+    }).catch((err)=>{
+        console.error(err);
+    });
+
+}
+
+async function withdraw(){
+
+    contract.methods.getCreator().call({from:senderAddress}).then(function(creator){
+        console.log("THE CREATOR IS "+creator);
+        if(creator == senderAddress){
+            //print fixed tax
+            contract.methods.withdraw().send({from:senderAddress}).then(function(withdrawn){
+                console.log(withdrawn);
+                document.getElementById('withdraw').outerHTML += "Correctly Withdrawn! how much????"; //add how much, variable withdrawn
+                //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+                document.getElementById('withdraw').disabled = true
+                //document.getElementById('tax').reset();
+            }).catch((err)=>{
+                console.error(err);
+            });
+        }else{
+            console.log("NOT THE CREATOR");
+            document.getElementById('withdraw').outerHTML += "You cannot withdraw!";
+            document.getElementById('withdraw').disabled = true
+        }
+
+    }).catch((err)=>{
+        console.error(err);
+    });
+
 }
 
 /*CHE FA QUESTA FUNZIONE
@@ -290,7 +378,7 @@ async function getOpenAuctions(){
                     }
                     
         
-                    button_car = '<form action="/car_history.html" method="get"> \
+                    button_car = '<form action="/car_history.html" method="get" onsubmit = "getCar();"> \
                                     <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction_db.chassis_id+'"/> \
                                     <input type="submit" value="Car history"/> \
                                 </form>'
@@ -417,29 +505,57 @@ async function getCar(){
     chassis_id = url.get("chassis_id");
     console.log("IN FOR CHASSIS ID = "+chassis_id);
 
-    fetch('http://localhost:5000/car_history?chassis_id='+chassis_id, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        return response.json()
-    }).then((auctions) => {
-        console.log("CARS ARE "+auctions.length);
-        auction = auctions[0];
-        console.log(auction);
+    contract.methods.getCarHistory(web3.utils.asciiToHex(chassis_id)).call({from:senderAddress}).then(function(contract_auctions) {
+        console.log("IN HISTORY AUCTIONS FROM CONTRACT ARE "+contract_auctions.length);
 
-        var tr = "<tr>";
-        tr += "<td>"+auction.owner_addr+"</td>";
-        //tr += "<td>"+auction.winner_addr+"</td>"; //WINNER ADDR NON LO ABBIAMO NEL DB, 
-        //STA SULLA BLOCKCHAIN, PERò IN REALTà LA BLOCKCHAIN CONTROLLA CHE TUTTO SIA APPOSTO 
-        //CON PREVIOUS OWNER E NEW OWNER QUINDI NON SERVE STAMPARLI QUI ENTRAMBI
-        tr += "<td>"+auction.car.chassis_id+"</td>";
-        tr += "<td>"+auction.offer+"</td>";
-        tr += "</tr>";
+        fetch('http://localhost:5000/car_history/'+chassis_id, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((auctions) => {
+            console.log("CARS ARE "+auctions.length);
+            for(let i = 0; i < auctions.length; i++){
+                auction = auctions[i];
+                console.log(auction);
 
-        document.getElementById('car').innerHTML += tr;
+                //compute right index
+                var index = 0;
+                for(let j = 0; j < contract_auctions.length; j++){
+                    if(contract_auctions[j].owner == auction.owner_addr){
+                        index = j;
+                        break;
+                    }
+                }
+
+                //print image
+                var img = new Image();
+                var result = localStorage.getItem(auction.picture_id);
+                //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
+                img.src = result;
+                document.getElementById('car').appendChild(img);
+
+                var tr = "<tr>";
+                tr += "<td>"+auction.owner_addr+"</td>";
+                if(contract_auctions[index].current_winner == 0){
+                    tr += "<td>"+"not yet sold"+"</td>";
+                }
+                else{ tr += "<td>"+contract_auctions[index].current_winner+"</td>"; }
+                tr += "<td>"+auction.chassis_id+"</td>";
+                tr += "<td>"+contract_auctions[index].offer+"</td>";
+                tr += "</tr>";
+
+                console.log("FOR J="+index+" the contract auction is "+contract_auctions[index]);
+
+                document.getElementById('car').innerHTML += tr;
+            }
+        });
+    }).catch((err)=>{
+        console.log(err);
+        console.error(err.message);
     });
 }
 
@@ -494,8 +610,17 @@ function subscribeToEvents(){
             if (error) {
                 console.error(error)
             }
-            console.log(event);
+            //console.log(event);
         }
     );
+
+    //DA TOGLIERE
+    contract.events.Withdrawn((error, event) => {
+        if (error) {
+            console.error(error)
+        }
+        //console.log("WITHDRAWN EVENT "+event);
+    }
+);
 
 }

@@ -45,7 +45,7 @@ app.get("/auction/:owner_addr&:chassis_id_hex", async(req,res)=>{
 
 
 //CREATE AN AUCTION
-app.post("/auctions", async(req,res) => {
+app.post("/auction", async(req,res) => {
     try{
         const {owner_addr, chassis_id_hex, chassis_id, picture_id, description} = req.body;
         var car = await pool.query("SELECT chassis_id FROM cars WHERE chassis_id = $1", [chassis_id]);
@@ -60,17 +60,17 @@ app.post("/auctions", async(req,res) => {
     }
 });
 
-/* //UPDATE STARTING_PRICE AND WINNER_ADDR OF AN AUCTION
-app.post("/send_offer", async(req,res)=>{
+//UPDATE AUCTION
+app.post("/update_auction", async(req,res)=>{
     try{
-        const{owner_addr, winner_addr, offer} = req.body;
+        const{owner_addr, chassis_id_hex, chassis_id, picture_id, description} = req.body;
         
-        await pool.query("UPDATE auctions SET starting_price = $1, winner_addr = $2 WHERE owner_addr = $3", [offer, winner_addr, owner_addr]);
+        await pool.query("UPDATE auctions SET chassis_id = $1, picture_id = $2, description = $3 WHERE owner_addr = $4 AND chassis_id_hex = $5", [chassis_id, picture_id, description, owner_addr, chassis_id_hex]);
     }
     catch(err){
         console.error(err.message);
     }
-});*/
+});
 
 //DELETE AN AUCTION (TODO)
 
