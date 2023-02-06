@@ -58,7 +58,7 @@ contract StoCar{
         _;
     }
 
-    function openAuction(uint256 starting_price, uint16 max_duration, bytes12 chassis_id) payable public{
+    function openAuction(uint256 starting_price, uint16 max_duration, bytes12 chassis_id) public{
         require(max_duration > 0, "The duration has to be greater than 0.");
         require(open_auctions[msg.sender].owner == address(0), "Only one open auction per user.");
         require(starting_price >= tax, "The starting price of an auction has to be greater or equal than the fixed tax.");
