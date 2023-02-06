@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x3Dec848A7F40a1A7986c0791eC168f95Df8172d1";
+var contractAddress = "0x8c832eA3F1B64984BE63E21FEF985CD1b00fd7cB";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -274,9 +274,7 @@ async function loadPictures(){
 
 //Plots all the auctions in a table
 async function getOpenAuctions(){
-    //console.log("contract: "+contract); pretty useless, it's just an object
-    
-    /////////////////////OK MA NON LE STAMPA IN ORDINE
+
     let trs = [];
     //get open auctions and relative information from db
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
@@ -288,41 +286,6 @@ async function getOpenAuctions(){
                 continue;
             }
             console.log(auction)
-
-            /*if(auction.owner != senderAddress){
-                button_participate = '<form action="/auction.html" method="get"> \
-                                        <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                        <input type="submit" value="See auction"/> \
-                                    </form>'
-            }else {//change it into close auction button
-                button_participate = '<form action="/close_auction.html" method="get"> \
-                                    <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                    <input type="submit" value="Close auction"/> \
-                                </form>'
-            }
-            
-
-            button_car = '<form action="/car_history.html" method="get"> \
-                            <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction.chassis_id+'"/> \
-                            <input type="submit" value="Car history"/> \
-                        </form>'
-
-            var tr = "<tr>";
-            //tr += "<td>"+auction.owner+"</td>";
-            if(auction.current_winner == 0){
-                tr += "<td>"+"none so far"+"</td>";
-            }else{
-                tr += "<td>"+auction.current_winner+"</td>";
-            }
-            tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
-            tr += "<td>"+(auction.starting_price)+" Wei</td>";
-            tr += "<td>"+(auction.offer)+" Wei</td>";
-            tr += "<td>"+"pippoplutopaperino"+"</td>";
-            tr += "<td>"+button_participate+"</td>";
-            tr += "<td>"+button_car+"</td>";
-            tr += "</tr>";
-            
-            document.getElementById('list_auctions').innerHTML += tr;*/
 
             trs[i] = "<tr>";
             if(auction.current_winner == 0){
@@ -383,31 +346,7 @@ async function getOpenAuctions(){
                                     <input type="submit" value="Car history"/> \
                                 </form>'
         
-                    /*var tr = "<tr>";
-                    //tr += "<td>"+auction.owner+"</td>";
-                    if(auction.current_winner == 0){
-                        tr += "<td>"+"none so far"+"</td>";
-                    }else{
-                        tr += "<td>"+auction.current_winner+"</td>";
-                    }
-                    tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
-                    tr += "<td>"+(auction.starting_price)+" Wei</td>";
-                    tr += "<td>"+(auction.offer)+" Wei</td>";*/
-
-                    //trs[i] = "<tr>";
                     trs[i] += "<td>"+auction_db.chassis_id+"</td>";
-                    //tr += "<td>"+auction.owner+"</td>";
-                    /*console.log("CURRENT WINNER IS "+auction.current_winner);
-                    if(auction.current_winner == 0){
-                        trs[i] += "<td>"+"none so far"+"</td>";
-                    }else{
-                        trs[i] += "<td>"+auction.current_winner+"</td>";
-                    }
-                    trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
-                    trs[i] += "<td>"+(auction.starting_price)+" Wei</td>";
-                    trs[i] += "<td>"+(auction.offer)+" Wei</td>";*/
-                    console.log("UNTIL NOW IS "+trs[i]);
-
                     trs[i] += "<td>"+(auction_db.description)+"</td>";
                     trs[i] += "<td>"+button_participate+"</td>";
                     trs[i] += "<td>"+button_car+"</td>";
