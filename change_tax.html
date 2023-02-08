@@ -2,7 +2,7 @@
 <html lang="en">
 	<meta charset="utf-8">
 	<head>
-		<title>StoCar - Create a new auction</title>
+		<title>StoCar - Participate to the auction</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.min.css" rel="stylesheet"> 
@@ -17,7 +17,7 @@
         <script src="dist/js-lib/jquery.min.js"></script>
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    
+
     <body onload="assegnaEventHandler();">
         <div class="header">
             <div class="logo">
@@ -46,23 +46,13 @@
                 </ul> 
             </div>-->
         </div>
-        <div class="sfondo">
-            <form onsubmit="openAuction();" id="new_auction">
-                <label for="description">Car description:</label><br>
-                <input type="text" id="description" name="description"><br>
-                <label for="starting_price">Auction starting price (in Wei):</label><br>
-                <input type="number" id="starting_price" name="starting_price"><br>
-                <label for="maximum_duration">Auction maximum duration (hours):</label><br>
-                <input type="number" id="maximum_duration" name="maximum_duration"><br>
-                <label for="chassis_id">Chassis identification number of the car:</label><br>
-                <input type="text" id="chassis_id" name="chassis_id"><br>
-                <label for="picture_id">Picture:</label><br>
-                <input type="file" id="picture_id" name="picture_id">
+        <div class="sfondo" id="tax_elem">
+            <form onsubmit="changeTax(); return false;" id="change_tax">
+                <label for="tax">Change the fixed tax (only for contract creator):</label><br>
+                <input type="number" id="new_tax" name="New Tax"><br>
                 <input type="submit" value="Submit">
-              </form>
-            <!--<div id='waiting'></div>
-            <div id="success"></div>-->
-        </div>      
+            </form>
+        </div>
     </body>
     <footer class="footer">
         <p>  &copy; Copyright 2023 StoCar </p>

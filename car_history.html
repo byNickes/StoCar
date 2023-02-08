@@ -2,7 +2,7 @@
 <html lang="en">
 	<meta charset="utf-8">
 	<head>
-		<title>StoCar - View auction</title>
+		<title>StoCar - Get the car history</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.min.css" rel="stylesheet"> 
@@ -18,10 +18,55 @@
         <script src="dist/js-lib/web3.min.js"></script>
     </head>
 
-    <body onload="getCar(); return false;">
-        <table id="car" >
-            <th>owner address</th><br>
-            <th>chassis_id</th><br>
-        </table>
+    <body onload="onLoad_history();">
+        <div class="header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="img/logo.png">
+                </a>
+            </div>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="available_auctions.html">Buy</a></li>
+                <li><a href="open_auction.html">Sell</a>
+            </ul>
+            <ul class="ai">
+                <input id = "tax" type = "button" onclick = "printTax()" value = "Display Fixed Tax">
+                <a href="login.html" class="button">Login</a>
+                <a href="signup.html" class="button">Sign Up</a>
+            </ul>
+            <!--<div class="dropdown">
+                <a id="button" class="button_crea">Menu</a>
+                <ul id="list" class="d" >
+                <br>
+                    <label>NOME UTENTE</label>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="">Profile</a></li>
+                    <li>  <a href="">Logout</a></li>
+                </ul> 
+            </div>-->
+        </div>
+        <div class="sfondo3">
+            <div><h4>Car History</h4></div>
+            <!--<input id = "history" type = "button" onclick = "getCar()" value = "Show Car History"></div>-->
+            <div>
+                <table id="car" border="1px">
+                    <th>previous owner</th>
+                    <th>new owner</th>
+                    <th>chassis_id</th>
+                    <!--<th>description</th><br>-->
+                    <!--<th>picture</th><br>-->
+                    <th>winning price</th>
+                </table>
+            </div>
+        </div>
     </body>
+    <footer class="footer">
+        <p>  &copy; Copyright 2023 StoCar </p>
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/logo.png">
+            </a>
+        </div>
+    </footer>
 </html>

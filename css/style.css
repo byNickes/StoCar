@@ -34,6 +34,23 @@
     url('/img/sfondo.jpeg') no-repeat center center;
     background-size:cover;
 }
+.sfondo_img{
+    /*position:fixed;
+    top:0;
+    left:250px;
+    right:0;
+    height:54px;*/
+    z-index:1000;
+    background-color: white;
+    display: block; 
+    background-size:auto;
+    align-items:center;
+    background: rgba(155, 193, 243, 0.432);
+    margin-left: 2%;
+    margin-right: 2%;
+    padding: 2%;
+    border-radius: 20px;
+}
 
 .sfondo h4{
     margin-top: 10px;
@@ -86,6 +103,11 @@
     border-radius: 20px;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 #list_auctions{
     font-size: 12px;
     background-color: white;
@@ -117,8 +139,9 @@
 }
 .ai{
     position: relative;
-    top:30px;
-    left:8.5px;
+    top:25px;
+    left:5px;
+    right:5px;
 }
 
 .ai2{
@@ -471,3 +494,8 @@ h2{font-size: 60px; font-style: oblique; text-align: center; }
     width:25px;
     height: 25px;
 }
+
+th, td {
+    padding: 2px;
+  }
+  
