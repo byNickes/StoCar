@@ -74,24 +74,73 @@
 
 .sfondo3{
     background-color: white;
-    display: flex; 
+    display: table; 
     background-size:auto;
     align-items:center;
     background: rgba(155, 193, 243, 0.432);
     margin-left: 2%;
     margin-right: 2%;
     padding: 2%;
+    padding-right: 3%;
     border-radius: 20px;
 }
 
 .sfondo3 h4{
+    margin-top: 10px;
+    margin-bottom: 5px;
     text-align: center;
     font-family:Georgia, 'Times New Roman', Times, serif;
-    font-size: 28px;
+    font-size: 35px;
+    color: black;
 }
 
 .sfondo4{
-    font-size: 70px;
+    background-color: white;
+    display: table; 
+    background-size:auto;
+    align-items:center;
+    background: rgba(155, 193, 243, 0.432);
+    margin-left: 2%;
+    margin-right: 2%;
+    padding: 2%;
+    padding-right: 4%;
+    border-radius: 20px;
+}
+
+.sfondo4 h4{
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 35px;
+    color: black;
+}
+
+#car{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 18px;
+    background-color: white;
+    margin: 20px;
+    padding: 50px;
+    border: 1px;
+    text-align: center;
+}
+
+#car th{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    padding: 8px;
+}
+
+#car tr td{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
+}
+
+.sfondo4{
     background-color: white;
     display: flex; 
     background-size:auto;
@@ -101,6 +150,16 @@
     margin-right: 2%;
     padding: 2%;
     border-radius: 20px;
+    
+}
+
+.sfondo4 h4{
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 35px;
+    color: black;
 }
 
 img {
@@ -109,21 +168,49 @@ img {
 }
 
 #list_auctions{
-    font-size: 12px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 18px;
     background-color: white;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 20px;
-    border-radius: 3px;
+    margin: 20px;
+    padding: 50px;
+    border: 1px;
+    text-align: center;
+}
+
+#list_auctions th{
+    padding: 8px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+#list_auctions tr td{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
 }
 
 #auction{
+    font-family:Georgia, 'Times New Roman', Times, serif;
     font-size: 18px;
     background-color: white;
     margin-left: auto;
     margin-right: auto;
     padding: 20px;
-    border-radius: 3px;
+    text-align: center;
+}
+
+#auction th{
+    padding: 8px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+#auction tr td{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
 }
 
 .logo img{
@@ -133,20 +220,21 @@ img {
 .menu{
     border: 2px none #ff0000;
     font-size: 25px;
-    width:75%;
+    width:65%;
     position:relative;
     top:35px;
 }
 .ai{
     position: relative;
-    top:25px;
-    left:5px;
-    right:5px;
+    top:30px;
+    right:10px;
+
 }
 
 .ai2{
     position: relative;
     top:30px;
+    margin-left:10%;
 }
 .ai li{display: inline-block;
     }
@@ -176,6 +264,27 @@ img {
     border-radius: 4px; 
     text-decoration: none;
 }
+
+.button1{
+    width: 160px;
+    padding: 10px 12px; 
+    background-color: rgba(190, 82, 74, 0.795); 
+    color: white; 
+    display: inline-block; 
+    border-radius: 4px; 
+    text-decoration: none;
+}
+
+.button2{
+    width: 170px;
+    padding: 10px 12px; 
+    background-color: rgba(190, 82, 74, 0.795); 
+    color: white; 
+    display: inline-block; 
+    border-radius: 4px; 
+    text-decoration: none;
+}
+
 
 .button_form{
     text-shadow:rgba(190, 82, 74, 0.795);
@@ -338,7 +447,7 @@ img {
 }
 
 .footer img{
-    width:60px; height:50px;
+    width:60px; height:60px;
 }
 
 h1{font-size: 30px; color:rgb(0, 0, 0); font-style: oblique; text-align: center;}

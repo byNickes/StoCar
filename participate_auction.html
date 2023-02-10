@@ -30,27 +30,15 @@
                 <li><a href="available_auctions.html">Buy</a></li>
                 <li><a href="open_auction.html">Sell</a>
             </ul>
-            <ul class="ai">
-                <input id = "tax" type = "button" onclick = "printTax()" value = "Display Fixed Tax">
-                <a href="login.html" class="button">Login</a>
-                <a href="signup.html" class="button">Sign Up</a>
+            <ul class="ai2">
+                <input id = "tax" type = "button" class = "button" onclick = "printTax()" value = "Display Fixed Tax">
             </ul>
-            <!--<div class="dropdown">
-                <a id="button" class="button_crea">Menu</a>
-                <ul id="list" class="d" >
-                <br>
-                    <label>NOME UTENTE</label>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="">Profile</a></li>
-                    <li>  <a href="">Logout</a></li>
-                </ul> 
-            </div>-->
         </div>
         <div class="sfondo">
             <form onsubmit="participateAuction(); return false;" id="participate_auction">
                 <label for="offer">Make a new offer:</label><br>
                 <input type="number" id="offer" name="offer"><br>
-                <input type="submit" value="Submit">
+                <input type="submit" class="button" style="margin-top:10px;"value="Submit">
             </form>
         </div>
     </body>

@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0x8c832eA3F1B64984BE63E21FEF985CD1b00fd7cB";
+var contractAddress = "0xE20C03FDCdcBC6d715b3E166101D3456bF500928";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -185,10 +185,16 @@ async function printTax(){
     //print fixed tax
     contract.methods.getTax().call({from:senderAddress}).then(function(tax){
         //console.log(tax);
-        document.getElementById('tax').outerHTML += tax+" Wei";
+        if(document.getElementById('starting_price')!=null){
+            document.getElementById('starting_price').outerHTML += "<h6 style='font-style: oblique; padding-top:3px;'>"+"Fixed Tax is "+tax+" Wei"+"</h6>";
+        }
+        else{
+        document.getElementById('tax').outerHTML += "<p style='font-style: oblique; padding-top:2px;'>"+tax+" Wei"+"</p>";
         //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
         document.getElementById('tax').disabled = true
         //document.getElementById('tax').reset();
+        console.log(document.getElementById('starting_price'));
+        }
     }).catch((err)=>{
         console.error(err);
     });
@@ -244,48 +250,45 @@ async function withdraw(){
 
 }
 
-/*CHE FA QUESTA FUNZIONE
-async function loadPictures(){
-    var j=1;
-    fetch('http://localhost:5000/auctions/', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        return response.json()
-    }).then((auctions) => {
-        console.log(auctions)
-        //for(let i = auctions.length-1; i>auctions.length-5; i--){ //le più recenti
-        i=0
-            console.log(auctions[i]);
-            var auction = auctions[i];
-            document.getElementById('slide'+j).setAttribute('alt',auction.chassis_id);
-            var dataImage=localStorage.getItem('images');
-            bannerImg=document.getElementById('slide'+j)
-            bannerImg.setAttribute('src','data:image/png;base64,'+dataImage); //COSÌ FUNZIONA MA NON CARICA IMG, WHY?
-            
-            //j++;
+async function loadPictures(open_pictures_id,open_pictures_desc){
+    console.log(open_pictures_id);
+    console.log(open_pictures_desc);
+    if(open_pictures_id.length>0){
+    
+        var j=1;
+        while(j<=open_pictures_id.length){
+            //console.log("Slide "+j);
+            var es=document.getElementById('slide'+j);
+            es.style="border: 1px none #000";
 
-        //}
-    });
-}*/
+            var img = new Image();
+            var result = localStorage.getItem(open_pictures_id[j-1]); 
+            img.src = result;
+            img.style="float:left; margin:10px; margin-top:30px; width:30%";
+            es.appendChild(img);
+
+            es.innerHTML += "<h2>It's currently available!</h2><h3 style='margin-top:10px;'>Description:</h3><p style='font-weight: bold;color:rgb(0, 0, 0); font-style: oblique; padding-top:40px; font-size:30px;'>"+open_pictures_desc[j-1]+"</p>"; //perchè console continua a dare errore ma funziona?
+            j++;
+        }
+    }
+}
 
 //Plots all the auctions in a table
 async function getOpenAuctions(){
-
     let trs = [];
     //get open auctions and relative information from db
     contract.methods.getOpenAuctions().call({from:senderAddress}).then(function(auctions) {
         //print everything on screen
+        console.log("Auction aperte sono "+auctions.length);
+        var array_openAuction_id=new Array(auctions.length);
+        var array_openAuction_desc=new Array(auctions.length);
         for(let i = 0; i < auctions.length; i++){
             auction = auctions[i];
-            ownerAddr = auction.owner
+            ownerAddr = auction.owner;
             if(ownerAddr == 0){
                 continue;
             }
-            console.log(auction)
+            console.log(auction);
 
             trs[i] = "<tr>";
             if(auction.current_winner == 0){
@@ -314,36 +317,43 @@ async function getOpenAuctions(){
             }).then((response) => {
                 console.log("RESPONSE IS "+response);
                 return response.json()
-            }).then((auctions) => {
-                console.log("AUCTIONS ARE "+auctions.length);
-                if(auctions.length > 0){
-                    auction_db = auctions[0];
-                    console.log("Picture is "+auction_db.picture_id);
-
+            }).then((auctions_db) => {
+                console.log("AUCTIONS ARE "+auctions_db.length);
+                if(auctions_db.length > 0){
+                    auction_db = auctions_db[0];
+                    
+                    array_openAuction_id[i]=auction_db.picture_id;
+                    array_openAuction_desc[i]=auction_db.description;
+                    
+                    console.log(array_openAuction_id);
+                    console.log(array_openAuction_desc);
+                    
+                    
                     //print images
                     var img = new Image();
                     var result = localStorage.getItem(auction_db.picture_id);
                     //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                     img.src = result;
+                    img.style = "padding:10px;"
                     document.getElementById('list_auctions').appendChild(img);
 
                     //console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
                     if(auction_db.owner_addr != senderAddress){
                         button_participate = '<form action="/auction.html" method="get"> \
                                                 <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction_db.owner_addr+'"/> \
-                                                <input type="submit" value="See auction"/> \
+                                                <input type="submit" class="button" value="See auction"/> \
                                             </form>'
                     }else {//change it into close auction button
                         button_participate = '<form action="/close_auction.html" method="get"> \
                                             <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction_db.owner_addr+'"/> \
-                                            <input type="submit" value="Close auction"/> \
+                                            <input type="submit" class="button" value="Close auction"/> \
                                         </form>'
                     }
                     
         
                     button_car = '<form action="/car_history.html" method="get" onsubmit = "getCar();"> \
                                     <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction_db.chassis_id+'"/> \
-                                    <input type="submit" value="Car history"/> \
+                                    <input type="submit" class="button" value="Car history"/> \
                                 </form>'
         
                     trs[i] += "<td>"+auction_db.chassis_id+"</td>";
@@ -354,13 +364,20 @@ async function getOpenAuctions(){
 
                     document.getElementById('list_auctions').innerHTML += trs[i];
                     //document.getElementById('list_auctions').appendChild(img);
+                    if(i==auctions.length-1){
+                        loadPictures(array_openAuction_id, array_openAuction_desc);
+                    }
                 }
+                
             });
+            
         }
 
     }).catch((err)=>{
         console.log(err);
     });
+
+    
 }
 
 //Plot a single auction
@@ -390,23 +407,24 @@ async function getOpenAuction(){
                 var result = localStorage.getItem(auction_db.picture_id);
                 //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                 img.src = result;
+                img.style="padding:10px;";
 
                 console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
                 if(auction_db.owner_addr != senderAddress){
                     button_participate = '<form action="/participate_auction.html" method="get"> \
                                             <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                            <input type="submit" value="Make an offer"/> \
+                                            <input type="submit" class="button" value="Make an offer"/> \
                                         </form>'
                 }else {//change it into close auction button
                     button_participate = '<form action="/close_auction.html" method="get"> \
                                         <input type="hidden" name="owner_addr" id = "owner_addr" value="'+auction.owner+'"/> \
-                                        <input type="submit" value="Close auction"/> \
+                                        <input type="submit" class="button" value="Close auction"/> \
                                     </form>'
                 }
                 
                 button_car = '<form action="/car_history.html" method="get"> \
                                 <input type="hidden" name="chassis_id" id="chassis_id" value="'+auction_db.chassis_id+'"/> \
-                                <input type="submit" value="Car history"/> \
+                                <input type="submit" class="button" value="Car history"/> \
                             </form>'
     
                 var tr = "<tr>";
@@ -475,6 +493,7 @@ async function getCar(){
                 var result = localStorage.getItem(auction.picture_id);
                 //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                 img.src = result;
+                img.style="padding: 10px;"
                 document.getElementById('car').appendChild(img);
 
                 var tr = "<tr>";

@@ -4,6 +4,16 @@ function assegnaEventHandler(){
         butt[i].addEventListener("mouseenter",cambiaColore);
         butt[i].addEventListener("mouseleave", ripristinaColore);
     }
+    var butt1=document.getElementsByClassName("button1");
+    for (i=0; i<butt1.length; i++){
+        butt1[i].addEventListener("mouseenter",cambiaColore);
+        butt1[i].addEventListener("mouseleave", ripristinaColore);
+    }
+    var butt2=document.getElementsByClassName("button2");
+    for (i=0; i<butt2.length; i++){
+        butt2[i].addEventListener("mouseenter",cambiaColore);
+        butt2[i].addEventListener("mouseleave", ripristinaColore);
+    }
 }
 
 function cambiaColore(e){
