@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xE20C03FDCdcBC6d715b3E166101D3456bF500928";
+var contractAddress = "0xcFd9AE2560D0cEd92d933b6AFFF926C335277b3C";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -75,6 +75,7 @@ async function initialise(contractAddress) {
 
 async function openAuction() {
     var description = $('#description').val();
+    console.log(description);
     var starting_price = $('#starting_price').val();
     var maximum_duration = parseInt($('#maximum_duration').val());
     var chassis_id = $('#chassis_id').val();
@@ -108,6 +109,7 @@ async function openAuction() {
                 return response.json()
             }).then((auctions) => {
                 console.log("AUCTIONS ARE "+auctions.length);
+                console.log(description);
                 if(auctions.length > 0){
                     //update an auction
                     fetch('http://localhost:5000/update_auction/', {
@@ -264,7 +266,7 @@ async function loadPictures(open_pictures_id,open_pictures_desc){
             var img = new Image();
             var result = localStorage.getItem(open_pictures_id[j-1]); 
             img.src = result;
-            img.style="float:left; margin:10px; margin-top:30px; width:30%";
+            img.style="float:left; margin:10px; margin-top:30px; width:30%; heigth:30%";
             es.appendChild(img);
 
             es.innerHTML += "<h2>It's currently available!</h2><h3 style='margin-top:10px;'>Description:</h3><p style='font-weight: bold;color:rgb(0, 0, 0); font-style: oblique; padding-top:40px; font-size:30px;'>"+open_pictures_desc[j-1]+"</p>"; //perchè console continua a dare errore ma funziona?
@@ -334,7 +336,7 @@ async function getOpenAuctions(){
                     var result = localStorage.getItem(auction_db.picture_id);
                     //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                     img.src = result;
-                    img.style = "padding:10px;"
+                    img.style = "padding: 10px; width:40%; heigth:40%";
                     document.getElementById('list_auctions').appendChild(img);
 
                     //console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
@@ -407,7 +409,7 @@ async function getOpenAuction(){
                 var result = localStorage.getItem(auction_db.picture_id);
                 //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                 img.src = result;
-                img.style="padding:10px;";
+                img.style="padding: 10px; width:40%; heigth:40%";
 
                 console.log("owner db "+auction_db.owner_addr+" vs sender "+senderAddress);
                 if(auction_db.owner_addr != senderAddress){
@@ -493,7 +495,7 @@ async function getCar(){
                 var result = localStorage.getItem(auction.picture_id);
                 //console.log("for picture: "+auction_db.picture_id+" --> the EXTRACTED IS "+result);
                 img.src = result;
-                img.style="padding: 10px;"
+                img.style="padding: 10px; width:40%; heigth:40%";
                 document.getElementById('car').appendChild(img);
 
                 var tr = "<tr>";
