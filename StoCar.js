@@ -1,5 +1,5 @@
 // Set the contract address
-var contractAddress = "0xcFd9AE2560D0cEd92d933b6AFFF926C335277b3C";
+var contractAddress = "0xA1d90dc07CD21B215462b485f4Ab45c612870894";
 // Where the ABI will be saved
 var contractJSON = "build/contracts/StoCar.json"
 // Set the sending address
@@ -70,7 +70,7 @@ async function initialise(contractAddress) {
     });
     
     // Create additional event listeners to display the results
-    subscribeToEvents();
+    //subscribeToEvents();
 }
 
 async function openAuction() {
@@ -152,35 +152,6 @@ async function openAuction() {
         //console.log(err);
         console.error(err.message);
     });
-
-
-    //prova stampa DA TOGLIERE
-    //var fileDisplayArea = document.getElementById('for_img');
-    //var imageType = /image.*/;
-    /*if (file.type.match(imageType)) {
-        var reader = new FileReader();
-
-        reader.onload = function(e) {
-            fileDisplayArea.innerHTML = "";
-
-            // Create a new image.
-            var img = new Image();
-            // Set the img src property using the data URL.
-            img.src = reader.result;
-            localStorage.setItem(picture_id, img.src);
-            console.log("beginning is "+localStorage.getItem(picture_id));
-
-            // Add the image to the page.
-            fileDisplayArea.appendChild(img);
-
-        }
-        reader.readAsDataURL(file); 
-    } else {
-        fileDisplayArea.innerHTML = "File not supported!";
-    }*/
-
-   
-
 }
 
 async function printTax(){
@@ -192,9 +163,7 @@ async function printTax(){
         }
         else{
         document.getElementById('tax').outerHTML += "<p style='font-style: oblique; padding-top:2px;'>"+tax+" Wei"+"</p>";
-        //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
         document.getElementById('tax').disabled = true
-        //document.getElementById('tax').reset();
         console.log(document.getElementById('starting_price'));
         }
     }).catch((err)=>{
@@ -233,10 +202,8 @@ async function withdraw(){
             //print fixed tax
             contract.methods.withdraw().send({from:senderAddress}).then(function(withdrawn){
                 //console.log(withdrawn);
-                document.getElementById('withdraw').outerHTML += "Correctly Withdrawn! how much????"; //add how much, variable withdrawn
-                //document.getElementById('tax').outerHTML += (tax/1e18)+" ETH";
+                document.getElementById('withdraw').outerHTML += "Correctly Withdrawn!";
                 document.getElementById('withdraw').disabled = true
-                //document.getElementById('tax').reset();
             }).catch((err)=>{
                 console.error(err);
             });
@@ -269,7 +236,7 @@ async function loadPictures(open_pictures_id,open_pictures_desc){
             img.style="float:left; margin:10px; margin-top:30px; width:30%; heigth:30%";
             es.appendChild(img);
 
-            es.innerHTML += "<h2>It's currently available!</h2><h3 style='margin-top:10px;'>Description:</h3><p style='font-weight: bold;color:rgb(0, 0, 0); font-style: oblique; padding-top:40px; font-size:30px;'>"+open_pictures_desc[j-1]+"</p>"; //perchè console continua a dare errore ma funziona?
+            es.innerHTML += "<h2>It's currently available!</h2><h3 style='margin-top:10px;'>Description:</h3><p style='font-weight: bold;color:rgb(0, 0, 0); font-style: oblique; padding-top:40px; font-size:30px;'>"+open_pictures_desc[j-1]+"</p>";
             j++;
         }
     }
@@ -302,7 +269,6 @@ async function getOpenAuctions(){
             let dateObj = new Date(auction.duration * 1000);
             let utcString = dateObj.toUTCString();
             trs[i] += "<td>"+utcString+"</td>";
-            //trs[i] += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
             trs[i] += "<td>"+(auction.starting_price)+" Wei</td>";
             trs[i] += "<td>"+(auction.offer)+" Wei</td>";
             
@@ -365,7 +331,6 @@ async function getOpenAuctions(){
                     trs[i] += "</tr>";
 
                     document.getElementById('list_auctions').innerHTML += trs[i];
-                    //document.getElementById('list_auctions').appendChild(img);
                     if(i==auctions.length-1){
                         loadPictures(array_openAuction_id, array_openAuction_desc);
                     }
@@ -431,7 +396,6 @@ async function getOpenAuction(){
     
                 var tr = "<tr>";
                 tr += "<td>"+auction_db.chassis_id+"</td>";
-                //tr += "<td>"+auction.owner+"</td>";
                 if(auction.current_winner == 0){
                     tr += "<td>"+"none so far"+"</td>";
                 }else{
@@ -441,7 +405,6 @@ async function getOpenAuction(){
                 let dateObj = new Date(auction.duration * 1000);
                 let utcString = dateObj.toUTCString();
                 tr += "<td>"+utcString+"</td>";
-                //tr += "<td>"+(auction.duration-auction.start_timestamp)/3600+"h</td>";
                 tr += "<td>"+(auction.starting_price)+" Wei</td>";
                 tr += "<td>"+(auction.offer)+" Wei</td>";
                 tr += "<td>"+(auction_db.description)+"</td>";
@@ -524,7 +487,6 @@ async function participateAuction(){
     owner_addr = url.get("owner_addr");
     var offer = $('#offer').val(); //Wei
     
-    //contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:web3.utils.toWei(offer, "ether")}).then(function(receipt) {
     contract.methods.participateAuction(owner_addr, offer).send({from:senderAddress, value:offer}).then(function(receipt) {
         //console.log(receipt);
 
@@ -542,13 +504,12 @@ async function closeAuction(){
     contract.methods.closeAuction(owner_addr).send({from:senderAddress}).then(function(receipt) {
         //console.log("Auction Closed: "+receipt);
         document.getElementById('close_auction').outerHTML += "<br><h4>Oh well, you succeeded: The auction is now closed!</h4>";
-        //document.getElementById('close_auction').reset();        
     }).catch((err)=>{
         console.error("Close Auction failed: "+err.message);
     });
 }
 
-function subscribeToEvents(){
+/*function subscribeToEvents(){
 
     contract.events.AuctionOpened( (error, event) => {
             if (error) {
@@ -574,7 +535,6 @@ function subscribeToEvents(){
         }
     );
 
-    //DA TOGLIERE
     contract.events.Withdrawn((error, event) => {
         if (error) {
             console.error(error)
@@ -583,4 +543,4 @@ function subscribeToEvents(){
     }
 );
 
-}
+}*/

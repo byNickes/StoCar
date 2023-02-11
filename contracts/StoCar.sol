@@ -76,7 +76,6 @@ contract StoCar{
             uint index = 0;
             car = tokens_closed[chassis_id]; //use the one already existing
 
-            //OK IL PROBLEMA  IN QUESTO CONTROLLO, QUALCOSA NON FUNZIONA  
             for(uint i = 0; i < token_balance[msg.sender].length; i++){
                 if(token_balance[msg.sender][i].chassis_id == car.chassis_id){ 
                     //token is in the sender's possession
@@ -122,18 +121,6 @@ contract StoCar{
 
     
     function getOpenAuctions() public view returns (Auction[] memory){
-        /*original
-        Auction[] memory ret = new Auction[](sellers.length);
-
-        for(uint i = 0; i < sellers.length; i++){
-            address seller = sellers[i];
-
-            //Don't insert auctions that don't exist
-            if(open_auctions[seller].owner != address(0)){
-                ret[i] = open_auctions[seller];
-            }
-        }*/
-
         uint[] memory empty = new uint[](sellers.length);
         uint total = 0;
 
@@ -181,11 +168,6 @@ contract StoCar{
         emit OfferAccepted(owner_addr, msg.sender, past_offer, (new_offer-tax));
     }
 
-    /*non so se serva fare un'altra funzione
-    function transferEther(address, _to, uint _amount) public payable {
-        address(_to).transfer(_amount);
-    }*/
-
 
     function closeAuction(address owner_addr) public{
         require(open_auctions[owner_addr].owner != address(0), "The auction doesn't exist."); //Check if the auction exists (just to be sure)
@@ -198,14 +180,6 @@ contract StoCar{
 
             token_balance[open_auctions[owner_addr].current_winner].push(open_auctions[owner_addr].car); //token added to winner balance
             emit TokenBalanceAccessed(open_auctions[owner_addr].current_winner, token_balance[open_auctions[owner_addr].current_winner].length,token_balance[open_auctions[owner_addr].current_winner][0].chassis_id, bytes12(0));
-            /*DA TOGLIERE
-            if(token_balance[owner_addr].length == 0){
-                token_balance[owner_addr].push(open_auctions[owner_addr].car);
-            }
-            else{
-                token_balance[owner_addr].push(open_auctions[owner_addr].car);
-            }*/
-            //emit TokenBalanceUpdated(owner_addr, token_balance[owner_addr].length);
         }
         else{ //no offer was made
             token_balance[owner_addr].push(open_auctions[owner_addr].car); //token added to previous owner balance
@@ -223,8 +197,6 @@ contract StoCar{
         emit AuctionClosed();
     }
 
-
-    //RIMETTERE VIEW, TOLTO SOLO PER EVENTI
     function getCarHistory(bytes12 chassis_id) view public returns (Auction[] memory){
         // find auctions of a specific chassis_id
 
@@ -244,7 +216,6 @@ contract StoCar{
         }
 
         Auction[] memory ret = new Auction[](total);
-        //ret[0] = open_auctions[sellers[0]];
         uint index = 0;
         for(uint i = 0; i < sellers.length; i++){
             if(open_presence[i] == 1){
@@ -263,11 +234,9 @@ contract StoCar{
 
 
     function getTax() public view returns(uint64 ret){
-        //emit Debug(tax,tax,tax);
         return tax;
     }
     function getCreator() public view returns(address){
-        //emit Debug(tax,tax,tax);
         return creator;
     }
     function changeFixedTax(uint64 new_tax) public{
@@ -283,8 +252,6 @@ contract StoCar{
 
         payable(msg.sender).transfer(collected_taxes);
         
-        //emit Debug(address(this).balance);
-
         emit Withdrawn(collected_taxes);
 
         uint256 old_taxes = collected_taxes;

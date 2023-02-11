@@ -15,15 +15,3 @@ CREATE TABLE "auctions" (
   FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
   PRIMARY KEY ("owner_addr","chassis_id_hex")
 );
-
-/*CREATE TABLE "auctions" (
-  "owner_addr" varchar,
-  "winner_addr" varchar,
-  "starting_price" int,
-  "maximum_duration" int,
-  "picture_id" varchar,
-  "description" varchar,
-  "chassis_id" varchar,
-  FOREIGN KEY ("chassis_id") REFERENCES cars ("chassis_id"),
-  PRIMARY KEY ("owner_addr")
-);*/

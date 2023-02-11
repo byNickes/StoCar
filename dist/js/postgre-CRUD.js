@@ -72,8 +72,6 @@ app.post("/update_auction", async(req,res)=>{
     }
 });
 
-//DELETE AN AUCTION (TODO)
-
 //GET A CAR
 app.get("/car_history/:chassis_id", async(req,res)=>{
     try{

@@ -17,7 +17,7 @@
     <script src="dist/js-lib/jquery.min.js"></script>
     <script src="dist/js-lib/web3.min.js"></script>
     </head>
-    <body onload="onLoad_index(); assegnaEventHandler(); return false;">
+    <body onload="onLoad_index(); return false;">
         <div class="header">
             <div class="logo">
                 <a href="index.html">
@@ -83,14 +83,14 @@
         <div class="sfondo2">
             <div class="hero">
                 <div class="hero__content1">
-                    <a id="crea" href="available_auctions.html" class="button_form">Buy</a>
-                    <div id="s1" class="speech-bubble speech-bubble-top"><i>Here you can partecipate to Auctions</i></div>
+                    <a id="crea" href="available_auctions.html" class="button_form">Sell</a>
+                    <div id="s1" class="speech-bubble speech-bubble-top"><i>Here you can open an Auction</i></div>
                 </div>  
                 <script>
                 </script>
                 <div class="hero__content1">
-                    <a id="partecipa" href="open_auction.html" class="button_form">Sell</a>
-                    <div id="s2" class="speech-bubble speech-bubble-top"><i>Here you can open an Auction</i></div>
+                    <a id="partecipa" href="open_auction.html" class="button_form">Buy</a>
+                    <div id="s2" class="speech-bubble speech-bubble-top"><i>Here you can partecipate to Auctions</i></div>
                 </div>
             </div>
         </div>
@@ -98,7 +98,6 @@
             <div><h4>Available Auctions</h4></div>
             <div id="list1">
               <table id="list_auctions">
-                <!--<th>owner address</th><br>-->
                 <th>current winner address</th>
                 <th>duration until</th>
                 <th>starting price</th>
