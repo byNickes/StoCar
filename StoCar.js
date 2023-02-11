@@ -164,7 +164,6 @@ async function printTax(){
         else{
         document.getElementById('tax').outerHTML += "<p style='font-style: oblique; padding-top:2px;'>"+tax+" Wei"+"</p>";
         document.getElementById('tax').disabled = true
-        console.log(document.getElementById('starting_price'));
         }
     }).catch((err)=>{
         console.error(err);
@@ -179,7 +178,7 @@ async function changeTax(){
         if(creator == senderAddress){
             //change fixed tax
             contract.methods.changeFixedTax(new_tax).send({from:senderAddress}).then(function(receipt){
-                console.log("TAX CHANGED in "+new_tax);
+                //console.log("TAX CHANGED in "+new_tax);
                 document.getElementById('change_tax').innerHTML += "You changed the tax!";
             }).catch((err)=>{
                 console.error(err);
