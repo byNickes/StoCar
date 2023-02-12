@@ -5,3 +5,5 @@ Before executing "compile.sh" to run the application, run "npm install" to insta
 You must have Ganache running and Truffle installed.
 
 Metamask was used to handle wallets.
+
+The database used is called StoCar.
