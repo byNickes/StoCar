@@ -1,5 +1,6 @@
+/* for development
 DROP TABLE "auctions";
-DROP TABLE "cars";
+DROP TABLE "cars";*/
 
 CREATE TABLE "cars" (
   "chassis_id" varchar,
