@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<head>
+		<title>StoCar - Available auctions</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/bootstrap.min.css" rel="stylesheet"> 
+        <script type="text/javascript" src="js/bootstrap.min.js" language="javascript"></script>
+        <link href="css/carousel.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;800&display=swap" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/script.js" language="javascript"></script>
+        <script type="text/javascript" src="StoCar.js" language="javascript"></script>
+        <script src="dist/js-lib/jquery.min.js"></script>
+        <script src="dist/js-lib/web3.min.js"></script>
+    </head>
+
+    <body onload="onLoad_available_auctions(); return false">
+        <div class="header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="img/logo.png">
+                </a>
+            </div>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="available_auctions.html">Buy</a></li>
+                <li><a href="open_auction.html">Sell</a>
+            </ul>
+            <ul class="ai2">
+                <input id = "tax" type = "button" class = "button2" onclick = "printTax()" value = "Display Fixed Tax">
+            </ul>
+        </div>
+        <div class="sfondo3">
+            <h4>Available Auctions</h4><br>
+            <div>
+              <table id="list_auctions">
+                <th>current winner address</th>
+                <th>duration until</th>
+                <th>starting price</th>
+                <th>current maximum offer</th>
+                <th>chassis_id</th>
+                <th>description</th>
+              </table>
+            </div>
+        <br><br>
+        </div>
+    </body>
+
+    <footer class="footer">
+        <p>  &copy; Copyright 2023 StoCar </p>
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/logo.png">
+            </a>
+        </div>
+    </footer>
+</html>

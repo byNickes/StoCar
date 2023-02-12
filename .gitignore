@@ -1,1 +1,4 @@
 ganache.AppImage
+build/
+node_modules/
+package-lock.json
